@@ -6,4 +6,3 @@ Tomas Kudrna
 Jan Frantisek Levicek
 Jakub Sebela
 
-webhook test
