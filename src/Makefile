@@ -3,6 +3,12 @@ PYTHON=python3
 PIP=pip3
 VENV_DIR=venv
 
+# Makefile pro Python projekt
+
+# Cíl, který se provede, když spustíš 'make'
+all:
+	echo Hello World!
+
 # Instalace závislostí
 install:
 	$(PIP) install -r requirements.txt
