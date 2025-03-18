@@ -1,0 +1,10 @@
+basicTests.py
+    - ošetřit nečíselné vstupy
+
+Makefile
+    - install: Tento úkol nainstaluje všechny závislosti uvedené v souboru requirements.txt.
+    - venv: Tento úkol vytvoří virtuální prostředí pro Python, které pomůže izolovat závislosti projektu.
+    - run: Tento úkol spustí hlavní Python soubor (např. main.py).
+    - test: Tento úkol spustí testy pomocí unittest.
+    - lint: Tento úkol spustí nástroj pro kontrolu stylu kódu (například flake8).
+    - clean: Tento úkol odstraní dočasné soubory jako __pycache__ nebo virtuální prostředí.
