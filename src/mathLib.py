@@ -106,7 +106,7 @@ def power(base, exponent):
     pass  # Implementace umocnění zde
 
 
-def square_root(x):
+def sqrt(x):
     """
     Funkce pro výpočet druhé odmocniny zadaného čísla.
 

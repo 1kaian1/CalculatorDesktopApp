@@ -1,5 +1,6 @@
 basicTests.py
     - ošetřit nečíselné vstupy
+    - ošetřit drobné odchylky reálného řešení od očekávaného výsledku (assertAlmostEqual?)
 
 Makefile
     - install: Tento úkol nainstaluje všechny závislosti uvedené v souboru requirements.txt.
