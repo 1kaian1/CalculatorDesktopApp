@@ -61,7 +61,11 @@ class TestMatLib(unittest.TestCase):
         self.assertAlmostEqual(mathLib.divide(7.5, 2.5), 3.0)
         self.assertAlmostEqual(mathLib.divide(0.5, 0.1), 5.0)
 
-        # Dělení se zbytkem
+        # Test dělení nulou (očekává výjimku)
+        with self.assertRaises(ZeroDivisionError):
+            mathLib.divide(10, 0)
+
+    def test_divide_with_remainder(self):
         self.assertEqual(mathLib.divide_with_remainder(10, 3), (3, 1))  # 10 / 3 = 3 zbytek 1
         self.assertEqual(mathLib.divide_with_remainder(25, 7), (3, 4))  # 25 / 7 = 3 zbytek 4
 
@@ -72,8 +76,6 @@ class TestMatLib(unittest.TestCase):
         self.assertEqual(mathLib.divide_with_remainder(8.4, -2.5), (-3.0, 0.9))  # 8.4 / -2.5 = -3.0 zbytek 0.9
 
         # Test dělení nulou (očekává výjimku)
-        with self.assertRaises(ZeroDivisionError):
-            mathLib.divide(10, 0)
         with self.assertRaises(ZeroDivisionError):
             mathLib.divide_with_remainder(10, 0)
 
