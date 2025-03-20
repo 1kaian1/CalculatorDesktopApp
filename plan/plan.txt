@@ -1,0 +1,37 @@
+IVS - Předběžný plán projektu 2
+
+Rozdělení rolí:
+
+- backend: Tomáš Kudrna
+- frontend: Jakub Šebela
+- testy, (od)instalace programu, makefile: Jan Kai Marek + Jan František Levíček
+
+Komunikační kanály:
+
+- discord
+- telefon
+
+Vývojové specifikace:
+
+- platforma: Linux
+- jazyk: Python
+- GUI: tkinter, potažmo další alternativy (ještě probereme)
+- správa verzí a hosting: GIT, GitHub
+- odkaz na repozitář: https://github.com/xlevic02/BUT-FIT-IVS25.git
+
+Stanovené termíny:
+
+Časový plán:
+- 13-20.3.: základní sada testů (+,-,*,/)
+- 20-27.3.: backend funkce (*,/,^,sqrt) + mockup + základní GUI testy
+- 27.3-3.4: základ GUI + směrodatná odchylka + backend final testy
+- 3-10.4: dodělat backend + GUI final testy
+- 10-17.4: dodělat GUI + instalační script
+- 17.4-1.5: časová rezerva
+
+- pravidelné meetingy: čtvrtek 12:00-13:00
+- týdenní sprinty
+
+- 20.3. 7:00: odevzdání předběžného plánu
+- 1.5. 7:00: odevzdání hotového projektu
+- 15:5. 7:00: odevzdání seznamu problémů

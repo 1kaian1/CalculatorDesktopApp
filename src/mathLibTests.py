@@ -1,10 +1,7 @@
-import unittest, math
+import unittest
 import mathLib  # Importuje mathLib, aby byly dostupné funkce jako add, subtract, etc.
 
 class TestMatLib(unittest.TestCase):
-    def test_something(self):
-        self.assertEqual(True, False)
-
     def test_add(self):
         self.assertEqual(mathLib.add(2, 3), 5)  # Test základního sčítání kladných čísel
         self.assertEqual(mathLib.add(1000000, 1), 1000001)  # Test sčítání velkých čísel
@@ -88,32 +85,46 @@ class TestMatLib(unittest.TestCase):
         with self.assertRaises(ValueError):
             mathLib.factorial(-5)
 
+        # Test pro float číslo (očekává výjimku)
+        with self.assertRaises(ValueError):
+            mathLib.factorial(5.5)
+
     def test_power(self):
         self.assertEqual(mathLib.power(2, 3), 8)  # Umocnění kladného čísla
         self.assertEqual(mathLib.power(5, 0), 1)  # Umocnění na nulu
-        self.assertEqual(mathLib.power(7, -2), 0.02040816326530612)  # Umocnění s negativním exponentem
-
-        # Float testy
-        self.assertAlmostEqual(mathLib.power(2.5, 2), 6.25)
-        self.assertAlmostEqual(mathLib.power(3.0, 0.5), math.sqrt(3))
-        self.assertAlmostEqual(mathLib.power(10.0, -1), 0.1)
-        self.assertAlmostEqual(mathLib.power(4.0, 0.5), 2.0)
+        self.assertAlmostEqual(mathLib.power(7, -2), 0.02040816326530612)  # Umocnění s negativním exponentem
 
         # Test pro záporný exponent v umocnění (očekává výjimku)
         with self.assertRaises(ValueError):
             mathLib.power(0, -1)  # Nula nemůže mít záporný exponent
 
+        # Test pro exponent typu float (očekává výjimku)
+        with self.assertRaises(ValueError):
+            mathLib.power(2, 3.5)  # Exponent je typu float
+
     def test_sqrt(self):
-        self.assertEqual(mathLib.sqrt(4), 2)  # Odmocnina z kladného čísla
-        self.assertEqual(mathLib.sqrt(9), 3)  # Odmocnina z dalšího kladného čísla
-        self.assertEqual(mathLib.sqrt(0), 0)  # Odmocnina z nuly
-        self.assertAlmostEqual(mathLib.sqrt(2), 1.414213562, places=9)  # Odmocnina z necelého čísla
+        # Odmocnina z kladného čísla
+        self.assertEqual(mathLib.sqrt(4, 1), 2)  # Odmocnina z 4 (exponent 1)
+        self.assertEqual(mathLib.sqrt(9, 1), 3)  # Odmocnina z 9 (exponent 1)
+        self.assertEqual(mathLib.sqrt(0, 1), 0)  # Odmocnina z 0 (exponent 1)
+
+        # Odmocnina z necelého čísla
+        self.assertAlmostEqual(mathLib.sqrt(2, 1), 1.414213562, places=9)  # Odmocnina z 2 (exponent 1)
+
+        # Test pro záporný exponent
+        self.assertAlmostEqual(mathLib.sqrt(4, -1), 0.5, places=9)  # Záporný exponent pro 4 (exponent -1)
+        self.assertAlmostEqual(mathLib.sqrt(2, -2), 0.25, places=9)  # Záporný exponent pro 2 (exponent -2)
 
         # Float testy
-        self.assertAlmostEqual(mathLib.sqrt(2.25), 1.5, places=9)  # Odmocnina z desetinného čísla
-        self.assertAlmostEqual(mathLib.sqrt(7.84), 2.8, places=9)  # Další odmocnina s floaty
-        self.assertAlmostEqual(mathLib.sqrt(0.01), 0.1, places=9)  # Malé číslo
-        self.assertAlmostEqual(mathLib.sqrt(100.0), 10.0, places=9)  # Velké číslo
+        self.assertAlmostEqual(mathLib.sqrt(2.25, 1), 1.5, places=9)  # Odmocnina z 2.25 (exponent 1)
+        self.assertAlmostEqual(mathLib.sqrt(7.84, 1), 2.8, places=9)  # Odmocnina z 7.84 (exponent 1)
+        self.assertAlmostEqual(mathLib.sqrt(0.01, 1), 0.1, places=9)  # Odmocnina z 0.01 (exponent 1)
+        self.assertAlmostEqual(mathLib.sqrt(100.0, 1), 10.0, places=9)  # Odmocnina z 100.0 (exponent 1)
+
+        # Záporné exponenty pro floaty
+        self.assertAlmostEqual(mathLib.sqrt(2.0, -1), 0.5, places=9)  # Záporný exponent pro 2.0 (exponent -1)
+        self.assertAlmostEqual(mathLib.sqrt(0.25, -2), 16.0, places=9)  # Záporný exponent pro 0.25 (exponent -2)
+        self.assertAlmostEqual(mathLib.sqrt(5.0, -3), 0.008, places=9)  # Záporný exponent pro 5.0 (exponent -3)
 
         # Test záporného čísla (očekává výjimku)
         with self.assertRaises(ValueError):

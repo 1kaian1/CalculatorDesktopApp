@@ -106,18 +106,21 @@ def power(base, exponent):
     pass  # Implementace umocnění zde
 
 
-def sqrt(x):
+def sqrt(x, degree=1):
     """
-    Funkce pro výpočet druhé odmocniny zadaného čísla.
+    Funkce pro výpočet odmocniny zadaného čísla s podporou odmocnitele.
 
     Parametry:
     x (int, float): Číslo, ze kterého chceme spočítat odmocninu.
+    degree (int): Odmocnitel, který určuje, zda se jedná o druhou odmocninu (degree=1) nebo jiný typ odmocniny (degree != 1).
 
     Návratová hodnota:
-    float: Druhá odmocnina čísla.
+    float: Výsledek výpočtu odmocniny s uvedeným odmocnitelem.
 
     Výjimka:
-    ValueError: Pokud je x záporné číslo.
+    ValueError: Pokud je x záporné číslo a není žádána komplexní odmocnina, nebo pokud odmocnitel není platný.
     """
+
     pass  # Implementace odmocniny zde
+
 
