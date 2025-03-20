@@ -1,15 +1,25 @@
-Časový plán:
+License disclaimer:
 
-13-20.3.: základní sada testů (+,-,*,/)
-20-27.3.: backend funkce (*,/,^,sqrt) + mockup + základní GUI testy
-27.3-3.4: základ GUI + směrodatná odchylka + backend final testy
-3-10.4: dodělat backend + GUI final testy
-10-17.4: dodělat GUI + instalační script
-17.4-1.5: časová rezerva
+# This file is part of [Project Name].
+#
+# [Project Name] is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# [Project Name] is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 
+Práce s GITem:
 
-
-mathLibTests.py
-    - ošetřit drobné odchylky reálného řešení od očekávaného výsledku (assertAlmostEqual?)
-
+git fetch	   Stáhne nové commity ze vzdáleného repozitáře, ale neaktualizuje pracovní kopii.
+git pull	   Stáhne nové commity a automaticky je sloučí do aktuální větve.
+git commit     Uloží změny do lokálního repozitáře. Neodesílá je na vzdálený server!
+git push       Odešle commity z lokálního repozitáře na remote (GitHub, GitLab...).
+git merge      Kombinuje změny ze dvou větví do jedné.
