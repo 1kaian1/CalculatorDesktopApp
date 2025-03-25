@@ -1,7 +1,8 @@
 import unittest
+import tkinter
 import gui
 
-class TestMatLib(unittest.TestCase):
+class TestGUI(unittest.TestCase):
     pass
 
 
