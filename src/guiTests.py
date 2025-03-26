@@ -1,11 +1,11 @@
 import unittest
 import tkinter as tk
-import gui
+import gui_remade
 
 class TestGUI(unittest.TestCase):
     def setUp(self):
         self.root = tk.Tk()
-        self.app = gui.GUI(self.root)
+        self.app = gui_remade.GUI(self.root)
 
     def tearDown(self):
         self.root.destroy()
@@ -20,20 +20,21 @@ class TestGUI(unittest.TestCase):
         self.assertEqual(self.app.equation_label.get(), "7")
 
     def test_clear(self):
-        self.app.button_press("123")
+        for char in "123":
+            self.app.button_press(char)
         self.app.clear()
         self.assertEqual(self.app.equation_text, "")
         self.assertEqual(self.app.equation_label.get(), "")
 
     def test_calculate_simple_expression(self):
-        self.app.button_press("2")
-        self.app.button_press("+")
-        self.app.button_press("3")
+        for char in "2+3":
+            self.app.button_press(char)
         self.app.calculate()
         self.assertEqual(self.app.equation_label.get(), "5")
 
     def test_calculate_divide_by_zero(self):
-        self.app.button_press("1/0")
+        for char in "1/0":
+            self.app.button_press(char)
         self.app.calculate()
         self.assertEqual(self.app.equation_label.get(), "Error")
 
