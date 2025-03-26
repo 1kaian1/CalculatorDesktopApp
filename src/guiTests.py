@@ -107,7 +107,8 @@ class TestGUI(unittest.TestCase):
         invalid_expressions = [
             "2+", "3-", "2*", "3/", "*2", "/3",
             "2+++2", "2+-+2", "2-+-2", "2---2",
-            "2**2", "2*/2", "2//2"
+            "2**2", "2*/2", "2//2",
+            "1..1", "1.2.3", "..1"
         ]
 
         for expr in invalid_expressions:
@@ -120,23 +121,6 @@ class TestGUI(unittest.TestCase):
 
     # TODO: tento vypocet se zobrazi jako 0.010000000000000002
     def test_valid_input(self):
-        """
-            ".1": "0.1",
-            "1.": "1.0",
-            "-.1": "-0.1",
-            "-1.": "-1.0",
-            "+.1": "0.1",
-            "+1.": "1.0",
-            ".1+.1": "0.2",
-            ".1-.1": "0.0",
-            ".1*.1": "0.01",
-            ".1/.1": "1.0",
-            "1.+1.": "2.0",
-            "1.-1.": "0.0",
-            "1.*1.": "1.0",
-            "1./1.": "1.0",
-        """
-
         test_cases = {
             ".1": "0.1",
             "1.": "1.0",
@@ -166,6 +150,32 @@ class TestGUI(unittest.TestCase):
                     self.assertEqual(result, expected)
                 self.app.clear()
 
+    def test_repeated_equation(self):
+        test_cases = {
+            "2+2": "4",
+            "2-2": "0",
+            "2*2": "4",
+            "2/2": "1",
+        }
+
+        for expr, expected in test_cases.items():
+            with self.subTest(expr = expr):
+                self.input_expression(expr)
+                self.app.calculate()
+                self.updateGui()
+                result = self.app.equation_label.get()
+                try:
+                    self.assertAlmostEqual(float(result), float(expected), places=6)
+                except ValueError:
+                    self.assertEqual(result, expected)
+                self.app.calculate()
+                self.updateGui()
+                result = self.app.equation_label.get()
+                try:
+                    self.assertAlmostEqual(float(result), float(expected), places=6)
+                except ValueError:
+                    self.assertEqual(result, expected)
+                self.app.clear()
 
 if __name__ == '__main__':
     unittest.main()
