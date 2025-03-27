@@ -1,13 +1,12 @@
 import unittest
 import tkinter as tk
-import gui_remade
-#import gui
+import gui
 
 class TestGUI(unittest.TestCase):
     def setUp(self):
         self.root = tk.Tk()
         self.root.withdraw()
-        self.app = gui_remade.GUI(self.root)
+        self.app = gui.GUI(self.root)
 
     def tearDown(self):
         self.root.destroy()
@@ -57,17 +56,8 @@ class TestGUI(unittest.TestCase):
                 self.assertEqual(self.app.equation_label.get(), expected)
                 self.app.clear()
 
-    # TODO: tento vypocet se zobrazi jako 0.10000000000000009
+    # TODO: vypocet 1.3-1.2 se zobrazi jako 0.10000000000000009
     def test_calculate_simple_expression(self):
-        """
-            "3/2": "1.5",
-            "1.2+1.3": "2.5",
-            "1.3-1.2": "0.1",
-            "1.5*1.5": "2.25",
-            "2.5/1.25": "2.0",
-            "2.5/2": "1.25",
-        """
-
         test_cases = {
             "2+3": "5",
             "3-2": "1",
@@ -119,7 +109,7 @@ class TestGUI(unittest.TestCase):
                 self.assertEqual(self.app.equation_label.get(), "Error")
                 self.app.clear()
 
-    # TODO: tento vypocet se zobrazi jako 0.010000000000000002
+    # TODO: vypocet .1*.1 se zobrazi jako 0.010000000000000002
     def test_valid_input(self):
         test_cases = {
             ".1": "0.1",

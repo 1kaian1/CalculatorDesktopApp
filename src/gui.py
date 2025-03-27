@@ -1,75 +1,78 @@
 import tkinter as tk
-root = tk.Tk()
 
-root.title("Kalkulacka")
-root.geometry("600x800+100+200")
-root.resizable(False,False)
-root.configure(bg="#DDDDDD")
+class GUI:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Kalkulacka")
+        self.root.geometry("600x800+100+200")
+        self.root.resizable(False, False)
+        self.root.configure(bg = "#DDDDDD")
 
-buttonWidth = 4
-buttonHeight = 2
-buttonColor = "#000000"
-textColor = "#FFFFFF"
-font = ("arial",30)
+        self.buttonWidth = 4
+        self.buttonHeight = 2
+        self.buttonColor = "#000000"
+        self.textColor = "#FFFFFF"
+        self.font = ("arial", 30)
+        self.buttonX = (15, 165, 315, 465)
+        self.buttonY = (135, 255, 375, 495, 615)
 
-buttonX = (15, 165, 315, 465)
-buttonY = (135, 255, 375, 495, 615)
+        self.equation_text = ""
+        self.equation_label = tk.StringVar()
 
-label = tk.Label(root,width=23, height=2, font=("arial",30),bg="#7cc7a9").place(x=12,y=12)
+        self.setup_ui()
 
-tk.Button(root,text="!",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[0], y=buttonY[0])
-tk.Button(root,text="x^n",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[1], y=buttonY[0])
-tk.Button(root,text="n√x",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[2], y=buttonY[0])
-tk.Button(root,text="%",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[3], y=buttonY[0])
+    def setup_ui(self):
+        # Vypisovy label
+        self.label = tk.Label(self.root, textvariable = self.equation_label, width = 23, height = 2, font = self.font, bg = "#7cc7a9")
+        self.label.place(x = 12, y = 12)
 
-tk.Button(root,text="7",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[0], y=buttonY[1])
-tk.Button(root,text="8",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[1], y=buttonY[1])
-tk.Button(root,text="9",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[2], y=buttonY[1])
-tk.Button(root,text="/",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[3], y=buttonY[1])
+        # Vsechna hlavni tlacitka
+        buttons = [
+            ("!", 0, 0), ("xⁿ", 1, 0), ("ˣ√n", 2, 0), ("%", 3, 0),
+            ("7", 0, 1), ("8", 1, 1), ("9", 2, 1), ("/", 3, 1),
+            ("4", 0, 2), ("5", 1, 2), ("6", 2, 2), ("*", 3, 2),
+            ("1", 0, 3), ("2", 1, 3), ("3", 2, 3), ("-", 3, 3),
+            ("0", 0, 4), (".", 1, 4), ("=", 2, 4), ("+", 3, 4)
+        ]
 
-tk.Button(root,text="4",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[0], y=buttonY[2])
-tk.Button(root,text="5",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[1], y=buttonY[2])
-tk.Button(root,text="6",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[2], y=buttonY[2])
-tk.Button(root,text="*",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[3], y=buttonY[2])
+        for (text, col, row) in buttons:
+            if text == "=":
+                command = self.calculate
+            else:
+                command = lambda val = text: self.button_press(val)
 
-tk.Button(root,text="1",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[0], y=buttonY[3])
-tk.Button(root,text="2",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[1], y=buttonY[3])
-tk.Button(root,text="3",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[2], y=buttonY[3])
-tk.Button(root,text="-",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[3], y=buttonY[3])
+            tk.Button(self.root, text = text, command = command,
+                      width = self.buttonWidth, height = self.buttonHeight,
+                      fg = self.textColor, bg = self.buttonColor,
+                      font = self.font).place(x = self.buttonX[col], y = self.buttonY[row])
 
-tk.Button(root,text="0",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[0], y=buttonY[4])
-tk.Button(root,text=".",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[1], y=buttonY[4])
-tk.Button(root,text="=",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[2], y=buttonY[4])
-tk.Button(root,text="+",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[3], y=buttonY[4])
-
-tk.Button(root,text="C",width=2,height=1,fg="red",bg="#FFFFFF",font=font).place(x=165, y=735)
-tk.Button(root,text="CE",width=2,height=1,fg="#FF0000",bg="white",font=font).place(x=315, y=735)
-
-
-global equation_text
-
-def show(label, text):
-    label.config(text = equation)
-
-def buttonPress(num):
-    equation_text = equation_text + str(num)
-    show(label, equation_text)
+        # Tlacitka C a CE
+        tk.Button(self.root, text = "C", width = 2, height = 1, fg = "red", bg = "#FFFFFF",
+                  font = self.font, command = self.clear).place(x = 165, y = 735)
+        tk.Button(self.root, text = "CE", width = 2, height = 1, fg = "red", bg = "#FFFFFF",
+                  font = self.font, command = self.clear).place(x = 315, y = 735)
 
 
-    
+    def button_press(self, value):
+        self.equation_text += str(value)
+        self.equation_label.set(self.equation_text)
 
-def calculate():
-    global equation
-    result = ""
-    
-    if (equation != ""):
+    def clear(self):
+        self.equation_text = ""
+        self.equation_label.set("")
+
+    def calculate(self):
         try:
-            result = eval(equation)
+            result = str(eval(self.equation_text))
+            self.equation_label.set(result)
+            self.equation_text = result
         except:
-            result = ZeroDivisionError
-            equation = ""
-            
-    label.config(text = equation)
+            self.equation_label.set("Error")
+            self.equation_text = ""
 
-root.mainloop()
 
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = GUI(root)
+    root.mainloop()
