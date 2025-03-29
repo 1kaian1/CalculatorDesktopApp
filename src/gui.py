@@ -1,75 +1,67 @@
-import tkinter as tk
-root = tk.Tk()
+from PySide6.QtWidgets import QGridLayout, QLabel, QPushButton, QWidget, QLineEdit, QVBoxLayout
+from PySide6.QtCore import QRegularExpression
+from PySide6.QtGui import QRegularExpressionValidator
 
-root.title("Kalkulacka")
-root.geometry("600x800+100+200")
-root.resizable(False,False)
-root.configure(bg="#DDDDDD")
+class TextInputApp(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Text Input with Buttons 1-9 and Operators")
+        self.setGeometry(100, 100, 400, 400)
 
-buttonWidth = 4
-buttonHeight = 2
-buttonColor = "#000000"
-textColor = "#FFFFFF"
-font = ("arial",30)
+        self.layout = QVBoxLayout()
 
-buttonX = (15, 165, 315, 465)
-buttonY = (135, 255, 375, 495, 615)
+        # Vytvoření labelu
+        self.label = QLabel("Enter up to 50 characters:", self)
+        self.layout.addWidget(self.label)
 
-label = tk.Label(root,width=23, height=2, font=("arial",30),bg="#7cc7a9").place(x=12,y=12)
+        # Vytvoření textového pole
+        self.text_input = QLineEdit(self)
+        self.text_input.setMaxLength(50)  # Nastavení maximální délky textu na 50 znaků
 
-tk.Button(root,text="!",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[0], y=buttonY[0])
-tk.Button(root,text="x^n",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[1], y=buttonY[0])
-tk.Button(root,text="n√x",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[2], y=buttonY[0])
-tk.Button(root,text="%",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[3], y=buttonY[0])
+        # Regulární výraz pro povolení čísel, desetinné čárky a operátorů +,-,*,/
+        regex = QRegularExpression(r"^[0-9+\-*/.]*$")  # Tento regex povolí čísla a operátory
+        validator = QRegularExpressionValidator(regex)
 
-tk.Button(root,text="7",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[0], y=buttonY[1])
-tk.Button(root,text="8",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[1], y=buttonY[1])
-tk.Button(root,text="9",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[2], y=buttonY[1])
-tk.Button(root,text="/",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[3], y=buttonY[1])
+        # Nastavení validátoru pro QLineEdit
+        self.text_input.setValidator(validator)
 
-tk.Button(root,text="4",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[0], y=buttonY[2])
-tk.Button(root,text="5",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[1], y=buttonY[2])
-tk.Button(root,text="6",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[2], y=buttonY[2])
-tk.Button(root,text="*",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[3], y=buttonY[2])
+        # Nastavení placeholderu pro QLineEdit
+        self.text_input.setPlaceholderText("Zadejte čísla, operátory +,-,*,/ nebo desetinnou čárku.")
+        self.layout.addWidget(self.text_input)
 
-tk.Button(root,text="1",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[0], y=buttonY[3])
-tk.Button(root,text="2",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[1], y=buttonY[3])
-tk.Button(root,text="3",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[2], y=buttonY[3])
-tk.Button(root,text="-",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[3], y=buttonY[3])
+        # Připojení signálu textChanged k metodě pro tisk textu do konzole
+        self.text_input.textChanged.connect(self.print_text_input)
 
-tk.Button(root,text="0",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[0], y=buttonY[4])
-tk.Button(root,text=".",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[1], y=buttonY[4])
-tk.Button(root,text="=",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[2], y=buttonY[4])
-tk.Button(root,text="+",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[3], y=buttonY[4])
+        # Vytvoření mřížky pro tlačítka
+        grid_layout = QGridLayout()
 
-tk.Button(root,text="C",width=2,height=1,fg="red",bg="#FFFFFF",font=font).place(x=165, y=735)
-tk.Button(root,text="CE",width=2,height=1,fg="#FF0000",bg="white",font=font).place(x=315, y=735)
+        # Vytvoření tlačítek 1-9 a operátorů
+        buttons = [QPushButton(str(i)) for i in range(1, 10)] + [QPushButton(op) for op in ["+", "-", "*", "/"]]
 
+        # Umístění tlačítek do mřížky
+        for i, button in enumerate(buttons):
+            row = i // 3
+            col = i % 3
+            grid_layout.addWidget(button, row, col)
+            button.clicked.connect(self.button_clicked)
 
-global equation_text
+        self.layout.addLayout(grid_layout)
+        self.setLayout(self.layout)
 
-def show(label, text):
-    label.config(text = equation)
+    def button_clicked(self):
+        button = self.sender()  # Získání tlačítka, které bylo stisknuto
+        current_text = self.text_input.text()  # Aktuální text v poli
+        new_text = current_text + button.text()  # Přidání textu tlačítka
+        if len(new_text) <= 50:  # Pokud není text delší než 50 znaků
+            self.text_input.setText(new_text)
 
-def buttonPress(num):
-    equation_text = equation_text + str(num)
-    show(label, equation_text)
+    # Metoda pro přijímání vstupů z main.py
+    def update_text_input(self, text):
+        current_text = self.text_input.text()
+        new_text = current_text + text
+        if len(new_text) <= 50:
+            self.text_input.setText(new_text)
 
-
-    
-
-def calculate():
-    global equation
-    result = ""
-    
-    if (equation != ""):
-        try:
-            result = eval(equation)
-        except:
-            result = ZeroDivisionError
-            equation = ""
-            
-    label.config(text = equation)
-
-root.mainloop()
-
+    # Funkce pro tisk aktuálního textu v text_input do konzole
+    def print_text_input(self):
+        print(self.text_input.text())  # Tiskne obsah textového pole do konzole
