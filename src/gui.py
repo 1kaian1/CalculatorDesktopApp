@@ -17,12 +17,13 @@
 # Copyright (c) 2025 Jakub Sebela, xsebelj00
 
 import tkinter as tk
+from mathLib import ExpressionTree
 
 class GUI:
     def __init__(self, root):
         self.root = root
         self.root.title("Kalkulacka")
-        self.root.geometry("600x800+100+200")
+        self.root.geometry("600x900+100+200")
         self.root.resizable(False, False)
         self.root.configure(bg = "#DDDDDD")
 
@@ -32,17 +33,25 @@ class GUI:
         self.textColor = "#FFFFFF"
         self.font = ("arial", 30)
         self.buttonX = (15, 165, 315, 465)
-        self.buttonY = (135, 255, 375, 495, 615)
+        self.buttonY = (220, 340, 460, 580, 700)
 
         self.equation_text = ""
+        self.equation_memory_text = ""
         self.equation_label = tk.StringVar()
+        self.equation_memory_label = tk.StringVar()
+
+        self.tree = ExpressionTree()
 
         self.setup_ui()
 
     def setup_ui(self):
+        # Pametovy label
+        self.memory_label = tk.Label(self.root, textvariable = self.equation_memory_label, width = 20, height = 2, font = ("arial", 20), bg = "#CCCCCC")
+        self.memory_label.place(x = 245, y = 50)
+
         # Vypisovy label
         self.label = tk.Label(self.root, textvariable = self.equation_label, width = 23, height = 2, font = self.font, bg = "#7cc7a9")
-        self.label.place(x = 12, y = 12)
+        self.label.place(x = 10, y = 100)
 
         # Vsechna hlavni tlacitka
         buttons = [
@@ -66,24 +75,62 @@ class GUI:
 
         # Tlacitka C a CE
         tk.Button(self.root, text = "C", width = 2, height = 1, fg = "red", bg = "#FFFFFF",
-                  font = self.font, command = self.clear).place(x = 165, y = 735)
+                  font = self.font, command = self.clear).place(x = 165, y = 825)
         tk.Button(self.root, text = "CE", width = 2, height = 1, fg = "red", bg = "#FFFFFF",
-                  font = self.font, command = self.clear).place(x = 315, y = 735)
+                  font = self.font, command = self.clear_entry).place(x = 315, y = 825)
 
 
     def button_press(self, value):
-        self.equation_text += str(value)
-        self.equation_label.set(self.equation_text)
+        if value in ["+", "-", "*", "/"] and self.equation_text != "":
+            self.equation_memory_text += self.equation_text + value
+
+            number = float(self.equation_text) if '.' in self.equation_text else int(self.equation_text)
+            self.tree.add_value(number)
+            self.tree.add_value(value)
+            self.equation_memory_label.set(self.equation_memory_text)
+            self.equation_text = ""
+            self.equation_label.set("")
+
+        elif value == "-" and self.equation_text == "" or value not in ["+", "*", "/"]:
+            self.equation_text += str(value)
+            self.equation_label.set(self.equation_text)
+
+        else:
+            self.equation_label.set("Chybejici cislo")
+            self.equation_text = ""
+
+
+    def clear_entry(self):
+        self.equation_text = ""
+        self.equation_label.set("")
 
     def clear(self):
         self.equation_text = ""
         self.equation_label.set("")
+        self.equation_memory_text = ""
+        self.equation_memory_label.set("")
+        print("Clearing")
 
     def calculate(self):
+        if self.equation_text:
+            number = float(self.equation_text) if '.' in self.equation_text else int(self.equation_text)
+            self.tree.add_value(number)
+
         try:
-            result = str(eval(self.equation_text))
-            self.equation_label.set(result)
-            self.equation_text = result
+            self.tree.finalize_tree()
+            root_node = self.tree.root
+            result = str(self.tree.evaluate(root_node))
+
+            if result == "Deleni nulou":
+                self.equation_label.set("Deleni nulou")
+                self.equation_text = ""
+            else:
+                self.equation_label.set(result)
+                self.equation_text = result
+                self.equation_memory_text = ""
+                self.equation_text = ""
+                self.equation_memory_label.set("")
+
         except:
             self.equation_label.set("Error")
             self.equation_text = ""

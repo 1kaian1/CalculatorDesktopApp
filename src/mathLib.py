@@ -18,106 +18,82 @@
 # mathlib.py - knihovna pro základní matematické operace
 
 import re
+#import gui
 
+class Node:
+    def __init__(self, value):
+        self.value = value
+        self.left = None
+        self.right = None
 
-# Základní matematické operace
+class ExpressionTree:
+    def __init__(self):
+        self.root = None
+        self.values = []
+        self.operators = []
 
-def add(a, b):
-    return a + b
+    def reset_tree(self):
+        self.root = None
+        self.values = []
+        self.operators = []
 
+    def is_operator(self, value):
+        return value in ['+', '-', '*', '/']
 
-def subtract(a, b):
-    return a - b
+    def precedence(self, operator):
+        if operator in ['+', '-']:
+            return 1
 
+        if operator in ['*', '/']:
+            return 2
 
-def multiply(a, b):
-    return a * b
+        return 0
 
+    def add_value(self, value):
+        if isinstance(value, int):
+            self.values.append(Node(value))
 
-def divide(a, b):
-    if b == 0:
-        raise ZeroDivisionError("Nelze dělit nulou.")
-    return a / b
+        elif self.is_operator(value):
+            while self.operators and self.precedence(self.operators[-1]) >= self.precedence(value):
+                self.apply_operator()
 
+            self.operators.append(value)
 
-def divide_with_remainder(a, b):
-    if b == 0:
-        raise ZeroDivisionError("Nelze dělit nulou.")
-    return divmod(a, b)
+    def apply_operator(self):
+        operator = self.operators.pop()
+        right = self.values.pop()
+        left = self.values.pop()
+        node = Node(operator)
+        node.left = left
+        node.right = right
+        self.values.append(node)
 
+    def finalize_tree(self):
+        while self.operators:
+            self.apply_operator()
 
-def factorial(n):
-    if n < 0:
-        raise ValueError("Faktoriál je definován pouze pro nezáporná čísla.")
-    result = 1
-    for i in range(1, n + 1):
-        result *= i
-    return result
+        self.root = self.values[-1] if self.values else None
 
+    def evaluate(self, node):
+        if node.left is None and node.right is None:
+            return node.value
 
-def power(base, exponent):
-    return base ** exponent
+        left_val = self.evaluate(node.left)
+        right_val = self.evaluate(node.right)
 
+        if node.value == '+':
+            return left_val + right_val
+        elif node.value == '-':
+            return left_val - right_val
+        elif node.value == '*':
+            return left_val * right_val
+        elif node.value == '/':
+            if right_val == 0:
+                return str("Deleni nulou")
+            return left_val / right_val
 
-def sqrt(x, degree=2):
-    # Pro výpočet odmocniny
-    if x < 0 and degree % 2 == 0:
-        raise ValueError("Záporné číslo nemá reálnou odmocninu při sudém odmocniteli.")
-    return x ** (1 / degree)
+    def evaluate_expression(self):
+        if not self.root:
+            return 0\
 
-
-def evaluate_expression(expression):
-    # Nejprve musíme nahradit všechny výskyty odmocniny
-    expression = re.sub(r'(\d*)√(\d+)', lambda m: str(sqrt(float(m.group(2)), int(m.group(1)) if m.group(1) else 2)),
-                        expression)
-
-    # Nahradíme faktoriály (např. 5! -> 120)
-    expression = re.sub(r'(\d+)!', lambda m: str(factorial(int(m.group(1)))), expression)
-
-    # První krok je zjistit, jestli je zde záporné číslo před odmocninou
-    # Zpracujeme to jako "n√x" před tím, než použijeme jakékoli operátory
-    if expression.startswith('-'):
-        expression = '0' + expression  # Pokud začíná "-" přidáme nulu před záporné číslo, aby bylo možné vyhodnotit jako nulu + číslo
-
-    # Tokenizace výrazu pro operátory a čísla
-    tokens = re.findall(r'\d+\.\d+|\d+|[-+*/]', expression)
-
-    # Nejprve vyřešíme násobení a dělení
-    i = 0
-    while i < len(tokens):
-        if tokens[i] == '*' or tokens[i] == '/':
-            left = float(tokens[i - 1])  # Předchozí číslo
-            operator = tokens[i]
-            right = float(tokens[i + 1])  # Následující číslo
-
-            if operator == '*':
-                result = multiply(left, right)
-            elif operator == '/':
-                result = divide(left, right)
-
-            tokens[i - 1] = result
-            del tokens[i:i + 2]  # Odstranění operátoru a pravého čísla
-            i -= 1  # Vrátili jsme se zpět, abychom zkontrolovali, jestli zůstaly nějaké operátory na tomto místě
-        else:
-            i += 1
-
-    # Poté vyřešíme sčítání a odčítání
-    i = 1
-    result = float(tokens[0])
-    while i < len(tokens):
-        operator = tokens[i]
-        next_number = float(tokens[i + 1])
-
-        if operator == '+':
-            result = add(result, next_number)
-        elif operator == '-':
-            result = subtract(result, next_number)
-
-        i += 2
-
-    # Pokud je výsledek celé číslo (např. 5.0), převedeme na int
-    if result.is_integer():
-        return str(int(result))
-
-    # Pokud není celé číslo, vrátíme výsledek zaokrouhlený na 2 desetinná místa
-    return str(round(result, 2))
+        return self.evaluate(self.root)
