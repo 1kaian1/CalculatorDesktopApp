@@ -15,85 +15,257 @@
 #
 # Copyright (c) 2025 Jan Kai Marek, xmarekj00
 
-# mathlib.py - knihovna pro základní matematické operace
-
 import re
-#import gui
 
-class Node:
-    def __init__(self, value):
-        self.value = value
-        self.left = None
-        self.right = None
+class MathLib:
 
-class ExpressionTree:
-    def __init__(self):
-        self.root = None
-        self.values = []
-        self.operators = []
+    @staticmethod
+    def add(a, b):
+        return a + b
 
-    def reset_tree(self):
-        self.root = None
-        self.values = []
-        self.operators = []
+    @staticmethod
+    def subtract(a, b):
+        return a - b
 
-    def is_operator(self, value):
-        return value in ['+', '-', '*', '/']
+    @staticmethod
+    def multiply(a, b):
+        return a * b
 
-    def precedence(self, operator):
-        if operator in ['+', '-']:
-            return 1
+    @staticmethod
+    def divide(a, b):
+        if b == 0:
+            raise ZeroDivisionError("Error: Division by zero")
+        return a / b
 
-        if operator in ['*', '/']:
-            return 2
+    @staticmethod
+    def factorial(n):
+        if n < 0:
+            raise ValueError("Error: Factorial is defined only for positive numbers")
+        result = 1
+        for i in range(1, n + 1):
+            result *= i
+        return result
 
-        return 0
+    @staticmethod
+    def power(base, exponent):
+        return base ** exponent
 
-    def add_value(self, value):
-        if isinstance(value, int):
-            self.values.append(Node(value))
+    @staticmethod
+    def sqrt(x, degree=2):
+        if x < 0 and degree % 2 != 0:
+            return -((-x) ** (1 / degree))
+        elif x < 0 and degree % 2 == 0:
+            raise ValueError("Error: A negative number does not have a real root with an even index")
+        return x ** (1 / degree)
 
-        elif self.is_operator(value):
-            while self.operators and self.precedence(self.operators[-1]) >= self.precedence(value):
-                self.apply_operator()
+    @staticmethod
+    def percentage(num1, operator, num2):
+        if operator == "+":
+            return num1 + num2 / 100 * num1
+        elif operator == "-":
+            return num1 - num2 / 100 * num1
+        elif operator == "*":
+            return num1 * (num2 / 100)
+        elif operator == "/":
+            return num1 / (num2 / 100)
 
-            self.operators.append(value)
+    @staticmethod
+    def evaluate_expression(expression):
 
-    def apply_operator(self):
-        operator = self.operators.pop()
-        right = self.values.pop()
-        left = self.values.pop()
-        node = Node(operator)
-        node.left = left
-        node.right = right
-        self.values.append(node)
+        try:
 
-    def finalize_tree(self):
-        while self.operators:
-            self.apply_operator()
+            # Inserting "*" in front of every parenthesis if operator is not given
+            expression = re.sub(r'(?<=[^\+\-\*/%!√\^])\(', r'*(', expression)
 
-        self.root = self.values[-1] if self.values else None
+            # Evaluating parentheses
+            while '(' in expression:
 
-    def evaluate(self, node):
-        if node.left is None and node.right is None:
-            return node.value
+                # Find the innermost parentheses
+                inner_expr = re.search(r'\(([^()]+)\)', expression)
 
-        left_val = self.evaluate(node.left)
-        right_val = self.evaluate(node.right)
+                if inner_expr:
 
-        if node.value == '+':
-            return left_val + right_val
-        elif node.value == '-':
-            return left_val - right_val
-        elif node.value == '*':
-            return left_val * right_val
-        elif node.value == '/':
-            if right_val == 0:
-                return str("Deleni nulou")
-            return left_val / right_val
+                    # Recursively evaluating inner_expr
+                    result = MathLib.evaluate_expression(inner_expr.group(1))
 
-    def evaluate_expression(self):
-        if not self.root:
-            return 0\
+                    # Replacing inner_expr with result
+                    expression = expression.replace(inner_expr.group(0), result)
 
-        return self.evaluate(self.root)
+                # Error if only "(" was found
+                else:
+                    raise ValueError("Error: Unable to find a properly closed pair of parentheses")
+
+            # Evaluating square root
+            #
+            # re.sub - „search and replace“ given pattern in expression
+            # lambda - anonymous function (could also be overwritten using def, but not necessary)
+            # MathLib.sqrt() - calling MathLib func for square root
+            #
+            #        (-?\d*) √ (-?\d+\.?\d*)
+            #   group(1)^            ^group(2)
+            #
+            # group(1):
+            #   -?: optional minus
+            #   d*: zero or more digits
+            #
+            # group(2):
+            #   -?: optional minus
+            #   d+: one or more digits
+            #   .?: optional dot (for decimal number)
+            #   d*: zero or more digits
+            #
+            # If group(1) is None, takes 2 as default (meaning square root from x at degree 2)
+            #
+            expression = re.sub(
+                r'(-?\d*|x)√(-?\d+\.?\d*)',
+                lambda m: str(MathLib.sqrt(float(m.group(2)), int(m.group(1)) if m.group(1) else 2)),
+                expression
+            )
+
+            # Evaluating factorial
+            #
+            # re.sub - „search and replace“ given pattern in expression
+            # lambda - anonymous function (could also be overwritten using def, but not necessary)
+            # MathLib.factorial() - calling MathLib func for factorial
+            #
+            #         (\d*)!
+            #   group(1)^
+            #
+            # group(1) - zero or more digits
+            #
+            expression = re.sub(
+                r'(\d+)!',
+                lambda m: str(MathLib.factorial(int(m.group(1)))),
+                expression
+            )
+
+            # Evaluating exponentation
+            #
+            # re.sub - „search and replace“ given pattern in expression
+            # lambda - anonymous function (could also be overwritten using def, but not necessary)
+            # MathLib.power() - calling MathLib func for exponentation
+            #
+            #     (-?\d+\.?\d*) \^ (-?\d+\.?\d*)
+            #   group(1)^                ^group(2)
+            #
+            # both group(1) and group(2):
+            #   -?: optional minus
+            #   d+: one or more digits
+            #   .?: optional dot (for decimal number)
+            #   d*: zero or more digits
+            #
+            expression = re.sub(
+                r'(-?\d+\.?\d*)\^(-?\d+\.?\d*)',
+                lambda m: str(MathLib.power(float(m.group(1)), float(m.group(2)))),
+                expression
+            )
+
+            # Evaluating percentage
+            #
+            # re.sub - „search and replace“ given pattern in expression
+            # lambda - anonymous function (could also be overwritten using def, but not necessary)
+            # MathLib.percentage() - calling MathLib func for exponentation
+            #
+            #     (-?\d+\.?\d*) ([+\-*/]) (-?\d+\.?\d*) %
+            #   group(1)^   group(2)^   group(3)^
+            #
+            # both group(1) and group(3):
+            #   -?: optional minus
+            #   d+: one or more digits
+            #   .?: optional dot (for decimal number)
+            #   d*: zero or more digits
+            #
+            # group(2) - one operator (+,-,*,/)
+            #
+            # In this function it is important, whether the operator is (1) "+" / "-" or (2) "*" / "/"
+            #   (1) The added or subtracted percentage value is evaluated from group(1) number
+            #       - example: 30-50% = 15
+            #       - Fifty percent of 15 is subtracted from 30, giving the result of 15.
+            #   (2) The multiplied or divided percentage value is evaluated from 1/group(3) number
+            #       - example: 100/50% = 200
+            #       - Fifty percent of 1 (1/2) is the divisor for 100, giving the result of 200.
+            #
+            # Examples:
+            #   30-50% = 15
+            #   30+50% = 45
+            #   100/50% = 200
+            #   100*50% = 50
+            #
+            expression = re.sub(
+                r'(-?\d+\.?\d*)([+\-*/])(-?\d+\.?\d*)%',
+                lambda m: str(MathLib.percentage(float(m.group(1)), m.group(2), float(m.group(3)))),
+                expression)
+
+
+
+            # Evaluating double operators
+            #
+            # re.sub - „search and replace“ given pattern in expression
+            #
+            # Replaces every "+-" in expression with "-"
+            #
+            expression = re.sub(
+                r'\+-',
+                '-',
+                expression)
+
+            # If expression begins with minus, we add "0" at start
+            if expression.startswith('-'):
+                expression = '0' + expression
+
+            # Evaluating the rest of the expression (tokenization)
+            #
+            # re.findall - „find all matches“ of pattern in expression
+            #
+            #   \d+\.\d+|\d+|[-+*/]
+            #
+            # This pattern is set to look for a value that is either float, integer or operator. Nothing else can be in
+            # our expression at this time.
+            #
+            tokens = re.findall(r'\d+\.\d+|\d+|[-+*/]', expression)
+
+            # This loops goes through every token and if it finds "*" or "/", it multiplies or divides the values on
+            # the left and on the right
+            i = 0
+            while i < len(tokens):
+                if tokens[i] in ('*', '/'):
+                    left = float(tokens[i - 1])
+                    operator = tokens[i]
+                    right = float(tokens[i + 1])
+
+                    if operator == '*':
+                        result = MathLib.multiply(left, right)
+                    elif operator == '/':
+                        result = MathLib.divide(left, right)
+
+                    tokens[i - 1] = result
+                    del tokens[i:i + 2]
+                    i -= 1
+                else:
+                    i += 1
+
+            # This loops goes through every token and if it finds "+" or "-", it adds or subtracts the values on
+            # the left and on the right
+            i = 1
+            result = float(tokens[0])
+            while i < len(tokens):
+                operator = tokens[i]
+                next_number = float(tokens[i + 1])
+
+                if operator == '+':
+                    result = MathLib.add(result, next_number)
+                elif operator == '-':
+                    result = MathLib.subtract(result, next_number)
+
+                i += 2
+
+            # Returns results either as an integer or float as rounded value.
+            if result.is_integer():
+                return str(int(result))
+            return str(round(result, 3))
+
+        # If an error occured during the evaluation, error message is printed on the calculator's screen. More info in
+        # console
+        except (ZeroDivisionError, IndexError, ValueError) as e:
+            print(e)
+            return "Error"
