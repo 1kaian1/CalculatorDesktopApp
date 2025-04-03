@@ -1,7 +1,9 @@
 # Definujte proměnné
 PYTHON=python3
 PIP=pip3
-VENV_DIR=venv
+PACKAGE_NAME=but-fit-ivs25
+PACKAGE_VERSION=1.0
+BUILD_DIR=../build
 
 # all (přeloží projekt – včetně programu pro profiling) – při zvolení skriptovacího jazyka využijte pro stažení závislostí, případně volte variantu níže
 all:
@@ -9,6 +11,13 @@ all:
 
 # pack (zabalí projekt tak, aby mohl být odevzdán)
 pack:
+	mkdir -p ../build  # Vytvoří složku pro balíček
+
+	cp -r ../src ../build  # Zkopíruje hlavní složku projektu
+
+	# Přejdeme do build adresáře a vytvoříme balíček
+	cd ../build && dpkg-buildpackage -us -uc
+
 
 # doc (spustí generování dokumentace)
 doc:
@@ -37,3 +46,4 @@ stddev:
 clean:
 	rm -rf __pycache__
 	rm -rf $(VENV_DIR)
+	rm -rf $(BUILD_DIR)

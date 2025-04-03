@@ -17,127 +17,107 @@
 
 # mathlib.py - knihovna pro základní matematické operace
 
+import re
+
+
+# Základní matematické operace
+
 def add(a, b):
-    """
-    Funkce pro sečítání dvou čísel.
-
-    Parametry:
-    a (int, float): První číslo.
-    b (int, float): Druhé číslo.
-
-    Návratová hodnota:
-    int, float: Součet dvou čísel.
-    """
-    pass  # Implementace sčítání zde
+    return a + b
 
 
 def subtract(a, b):
-    """
-    Funkce pro odčítání druhého čísla od prvního.
-
-    Parametry:
-    a (int, float): První číslo.
-    b (int, float): Druhé číslo.
-
-    Návratová hodnota:
-    int, float: Rozdíl mezi dvěma čísly.
-    """
-    pass  # Implementace odčítání zde
+    return a - b
 
 
 def multiply(a, b):
-    """
-    Funkce pro násobení dvou čísel.
-
-    Parametry:
-    a (int, float): První číslo.
-    b (int, float): Druhé číslo.
-
-    Návratová hodnota:
-    int, float: Součin dvou čísel.
-    """
-    pass  # Implementace násobení zde
+    return a * b
 
 
 def divide(a, b):
-    """
-    Funkce pro dělení prvního čísla druhým.
-
-    Parametry:
-    a (int, float): Dělenec.
-    b (int, float): Dělitel.
-
-    Návratová hodnota:
-    int, float: Výsledek dělení.
-
-    Výjimka:
-    ZeroDivisionError: Pokud je dělitel roven nule.
-    """
-    pass  # Implementace dělení zde
+    if b == 0:
+        raise ZeroDivisionError("Nelze dělit nulou.")
+    return a / b
 
 
 def divide_with_remainder(a, b):
-    """
-    Funkce pro dělení prvního čísla druhým se zbytkem.
-
-    Parametry:
-    a (int): Dělenec (musí být celé číslo).
-    b (int): Dělitel (musí být celé číslo).
-
-    Návratová hodnota:
-    tuple: Dvojice (quotient, remainder), kde quotient je celočíselný podíl a remainder je zbytek.
-
-    Výjimka:
-    ZeroDivisionError: Pokud je dělitel roven nule.
-    """
-    pass  # Implementace dělení se zbytkem zde
+    if b == 0:
+        raise ZeroDivisionError("Nelze dělit nulou.")
+    return divmod(a, b)
 
 
 def factorial(n):
-    """
-    Funkce pro výpočet faktoriálu zadaného čísla.
-
-    Parametry:
-    n (int): Číslo, jehož faktoriál chceme spočítat. Číslo musí být nezáporné.
-
-    Návratová hodnota:
-    int: Faktoriál čísla.
-
-    Výjimka:
-    ValueError: Pokud je n záporné číslo.
-    """
-    pass  # Implementace faktoriálu zde
+    if n < 0:
+        raise ValueError("Faktoriál je definován pouze pro nezáporná čísla.")
+    result = 1
+    for i in range(1, n + 1):
+        result *= i
+    return result
 
 
 def power(base, exponent):
-    """
-    Funkce pro umocnění základu na zadaný exponent.
-
-    Parametry:
-    base (int, float): Základ umocnění.
-    exponent (int): Exponent, musí být celé číslo (přirozené číslo).
-
-    Návratová hodnota:
-    int, float: Výsledek umocnění.
-    """
-    pass  # Implementace umocnění zde
+    return base ** exponent
 
 
-def sqrt(x, degree=1):
-    """
-    Funkce pro výpočet odmocniny zadaného čísla s podporou odmocnitele.
-
-    Parametry:
-    x (int, float): Číslo, ze kterého chceme spočítat odmocninu.
-    degree (int): Odmocnitel, který určuje, zda se jedná o druhou odmocninu (degree=1) nebo jiný typ odmocniny (degree != 1).
-
-    Návratová hodnota:
-    float: Výsledek výpočtu odmocniny s uvedeným odmocnitelem.
-
-    Výjimka:
-    ValueError: Pokud je x záporné číslo a není žádána komplexní odmocnina, nebo pokud odmocnitel není platný.
-    """
-
-    pass  # Implementace odmocniny zde
+def sqrt(x, degree=2):
+    # Pro výpočet odmocniny
+    if x < 0 and degree % 2 == 0:
+        raise ValueError("Záporné číslo nemá reálnou odmocninu při sudém odmocniteli.")
+    return x ** (1 / degree)
 
 
+def evaluate_expression(expression):
+    # Nejprve musíme nahradit všechny výskyty odmocniny
+    expression = re.sub(r'(\d*)√(\d+)', lambda m: str(sqrt(float(m.group(2)), int(m.group(1)) if m.group(1) else 2)),
+                        expression)
+
+    # Nahradíme faktoriály (např. 5! -> 120)
+    expression = re.sub(r'(\d+)!', lambda m: str(factorial(int(m.group(1)))), expression)
+
+    # První krok je zjistit, jestli je zde záporné číslo před odmocninou
+    # Zpracujeme to jako "n√x" před tím, než použijeme jakékoli operátory
+    if expression.startswith('-'):
+        expression = '0' + expression  # Pokud začíná "-" přidáme nulu před záporné číslo, aby bylo možné vyhodnotit jako nulu + číslo
+
+    # Tokenizace výrazu pro operátory a čísla
+    tokens = re.findall(r'\d+\.\d+|\d+|[-+*/]', expression)
+
+    # Nejprve vyřešíme násobení a dělení
+    i = 0
+    while i < len(tokens):
+        if tokens[i] == '*' or tokens[i] == '/':
+            left = float(tokens[i - 1])  # Předchozí číslo
+            operator = tokens[i]
+            right = float(tokens[i + 1])  # Následující číslo
+
+            if operator == '*':
+                result = multiply(left, right)
+            elif operator == '/':
+                result = divide(left, right)
+
+            tokens[i - 1] = result
+            del tokens[i:i + 2]  # Odstranění operátoru a pravého čísla
+            i -= 1  # Vrátili jsme se zpět, abychom zkontrolovali, jestli zůstaly nějaké operátory na tomto místě
+        else:
+            i += 1
+
+    # Poté vyřešíme sčítání a odčítání
+    i = 1
+    result = float(tokens[0])
+    while i < len(tokens):
+        operator = tokens[i]
+        next_number = float(tokens[i + 1])
+
+        if operator == '+':
+            result = add(result, next_number)
+        elif operator == '-':
+            result = subtract(result, next_number)
+
+        i += 2
+
+    # Pokud je výsledek celé číslo (např. 5.0), převedeme na int
+    if result.is_integer():
+        return str(int(result))
+
+    # Pokud není celé číslo, vrátíme výsledek zaokrouhlený na 2 desetinná místa
+    return str(round(result, 2))
