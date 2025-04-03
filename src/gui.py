@@ -16,190 +16,81 @@
 # Copyright (c) 2025 Jan Frantisek Levicek, xlevic02
 # Copyright (c) 2025 Jakub Sebela, xsebelj00
 
-import sys
+import tkinter as tk
 
-from PySide6 import QtCore
-from PySide6.QtCore import QEvent, Qt, QCoreApplication, QTimer
-from PySide6.QtGui import QFont, Qt, QKeyEvent
-from PySide6.QtWidgets import QWidget, QLineEdit, QVBoxLayout, QHBoxLayout, QPushButton, QApplication
-from mathLib import evaluate_expression
+class GUI:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Kalkulacka")
+        self.root.geometry("600x800+100+200")
+        self.root.resizable(False, False)
+        self.root.configure(bg = "#DDDDDD")
 
+        self.buttonWidth = 4
+        self.buttonHeight = 2
+        self.buttonColor = "#000000"
+        self.textColor = "#FFFFFF"
+        self.font = ("arial", 30)
+        self.buttonX = (15, 165, 315, 465)
+        self.buttonY = (135, 255, 375, 495, 615)
 
+        self.equation_text = ""
+        self.equation_label = tk.StringVar()
 
+        self.setup_ui()
 
-class Calculator(QWidget):
-    def __init__(self):
-        super().__init__()
-        print("Inicializace proběhla správně!")
+    def setup_ui(self):
+        # Vypisovy label
+        self.label = tk.Label(self.root, textvariable = self.equation_label, width = 23, height = 2, font = self.font, bg = "#7cc7a9")
+        self.label.place(x = 12, y = 12)
 
-        self.setWindowTitle("Kalkulačka")
-        self.setGeometry(100, 100, 300, 400)
-
-        self.expression_field = QLineEdit(self)
-        self.expression_field.setReadOnly(True)
-        self.expression_field.setAlignment(Qt.AlignmentFlag.AlignRight)
-
-        self.result_field = QLineEdit(self)
-        self.result_field.setReadOnly(True)
-        self.result_field.setAlignment(Qt.AlignmentFlag.AlignRight)
-
-        font = QFont()
-        font.setPointSize(14)
-        self.expression_field.setFont(font)
-        font.setPointSize(24)
-        self.result_field.setFont(font)
-
-        self.expression_field.setFocusPolicy(Qt.NoFocus)
-        self.expression_field.setStyleSheet("border: none; background: transparent;")
-        self.expression_field.setFixedHeight(30)
-
-        self.main_layout = QVBoxLayout(self)
-        self.button_layout = QVBoxLayout()
-        self.main_layout.addWidget(self.expression_field)
-        self.main_layout.addWidget(self.result_field)
-        self.main_layout.addLayout(self.button_layout)
-
-        self.buttons = [
-            ['7', '8', '9', '/', 'C'],
-            ['4', '5', '6', '*', 'CE'],
-            ['1', '2', '3', '-', '√'],
-            ['0', '.', '=', '+', '!']
+        # Vsechna hlavni tlacitka
+        buttons = [
+            ("!", 0, 0), ("xⁿ", 1, 0), ("ˣ√n", 2, 0), ("%", 3, 0),
+            ("7", 0, 1), ("8", 1, 1), ("9", 2, 1), ("/", 3, 1),
+            ("4", 0, 2), ("5", 1, 2), ("6", 2, 2), ("*", 3, 2),
+            ("1", 0, 3), ("2", 1, 3), ("3", 2, 3), ("-", 3, 3),
+            ("0", 0, 4), (".", 1, 4), ("=", 2, 4), ("+", 3, 4)
         ]
 
-        for row in self.buttons:
-            row_layout = QHBoxLayout()
-            for btn_text in row:
-
-                button = QPushButton(btn_text)
-                button.click()
-
-                button_font = QFont()
-                button_font.setPointSize(18)
-                button.setFont(button_font)
-
-                button.setFixedSize(60, 60)
-
-                button.clicked.connect(self.on_button_click)
-                row_layout.addWidget(button)
-
-            self.button_layout.addLayout(row_layout)
-
-        self.result_text = '0'
-        self.result_field.setText(self.result_text)
-        self.expression_text = ''
-        self.override_result_text = False
-        self.last_sender_expression = ''
-        self.last_sender_text = ''
-        self.key_pressed = ''
-        self.enter_clicked = False
-
-        self.key = None
-
-
-
-
-    def on_button_click(self):
-        button = self.sender()
-        if button is not None:
-            self.handle_input(button.text())
-
-    def handle_input(self, key_pressed):
-
-        button_operators = ['+', '-', '*', '/', '^']
-        button_numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-
-        if key_pressed in button_numbers:
-            print("KEY IN NUMBERS")
-
-            if self.enter_clicked:
-                self.result_text += key_pressed
-                self.expression_text = ''
-            if self.override_result_text:
-                self.result_text = key_pressed
-                self.override_result_text = False
+        for (text, col, row) in buttons:
+            if text == "=":
+                command = self.calculate
             else:
-                self.result_text += key_pressed
-                print("RESULT CHANGED:", self.result_text)
+                command = lambda val = text: self.button_press(val)
 
-            self.enter_clicked = False
+            tk.Button(self.root, text = text, command = command,
+                      width = self.buttonWidth, height = self.buttonHeight,
+                      fg = self.textColor, bg = self.buttonColor,
+                      font = self.font).place(x = self.buttonX[col], y = self.buttonY[row])
 
-        elif key_pressed in button_operators:  # co se stříškou?
-            print("KEY IN BUTTONS")
-            self.enter_clicked = False
+        # Tlacitka C a CE
+        tk.Button(self.root, text = "C", width = 2, height = 1, fg = "red", bg = "#FFFFFF",
+                  font = self.font, command = self.clear).place(x = 165, y = 735)
+        tk.Button(self.root, text = "CE", width = 2, height = 1, fg = "red", bg = "#FFFFFF",
+                  font = self.font, command = self.clear).place(x = 315, y = 735)
 
-            if self.expression_text == '':
-                self.expression_text = '0'
-                self.expression_text += key_pressed
-            elif self.expression_text == '' and self.result_text != '':
-                self.expression_text = self.result_text
-                self.expression_text += key_pressed
-            elif self.expression_text[-1] not in ['+', '-', '*', '/']:
-                if self.expression_text[-1] == '=':
-                    self.expression_text = self.expression_text[:-1]
-                self.expression_text += self.result_text
-                self.expression_text = evaluate_expression(self.expression_text)
-                self.result_text = self.expression_text
-                self.expression_text += key_pressed
-                self.override_result_text = True
-            else:
-                self.expression_text[-1] = key_pressed
 
-        elif key_pressed == '=':
+    def button_press(self, value):
+        self.equation_text += str(value)
+        self.equation_label.set(self.equation_text)
 
-            self.enter_clicked = True
+    def clear(self):
+        self.equation_text = ""
+        self.equation_label.set("")
 
-            if self.last_sender_text in button_operators:
-                self.expression_text += self.result_text
-                self.result_text = evaluate_expression(self.expression_text)
-                self.expression_text += '='
-            elif self.enter_clicked:
-                self.expression_text = self.result_text + self.last_sender_expression
-                self.result_text = evaluate_expression(self.expression_text)
-                self.expression_text += '='
-            else:
-                self.expression_text += self.result_text
-                self.result_text = self.expression_text
-                self.result_text = evaluate_expression(self.result_text)
-                self.expression_text += '='
+    def calculate(self):
+        try:
+            result = str(eval(self.equation_text))
+            self.equation_label.set(result)
+            self.equation_text = result
+        except:
+            self.equation_label.set("Error")
+            self.equation_text = ""
 
-        elif key_pressed == 'backspace':
-            print("BACKSPACE")
-            self.result_text = self.result_text[:-1]
 
-        # elif button == 'C':
-        #    pass
-        # elif button == 'CE':
-        #    pass
 
-        self.result_field.setText(self.result_text)
-        self.expression_field.setText(self.expression_text)
-
-        if self.last_sender_expression in button_operators and self.key_pressed not in button_operators:
-            self.last_sender_expression += self.key_pressed
-        elif self.last_sender_expression in button_operators and self.key_pressed in button_operators:
-            self.last_sender_expression = self.key_pressed
-
-        self.last_sender_text = self.key_pressed
-
-    def keyPressEvent(self, event: QKeyEvent):
-        key = event.text()
-        print("KEY EVENT:", key)
-        if key.isdigit() or key in "+-*/.=C":
-            self.handle_input(key)
-        elif event.key() == Qt.Key_Enter or event.key() == Qt.Key_Return:
-            self.handle_input('=')
-        elif event.key() == Qt.Key_Backspace:
-            event.accept()
-            print("backspace")
-            if self.result_text != '':
-                self.result_text = self.result_text[:-1]
-                self.result_field.setText(self.result_text)
-        else:
-            super().keyPressEvent(event)
-        event.accept()
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    calculator = Calculator()
-    calculator.show()
-    sys.exit(app.exec())
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = GUI(root)
+    root.mainloop()
