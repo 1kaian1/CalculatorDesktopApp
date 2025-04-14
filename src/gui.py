@@ -15,191 +15,263 @@
 
 # Copyright (c) 2025 Jan Frantisek Levicek, xlevic02
 # Copyright (c) 2025 Jakub Sebela, xsebelj00
+# Copyright (c) 2025 Jan Kai Marek, xmarekj00
 
 import sys
 
-from PySide6 import QtCore
-from PySide6.QtCore import QEvent, Qt, QCoreApplication, QTimer
-from PySide6.QtGui import QFont, Qt, QKeyEvent
-from PySide6.QtWidgets import QWidget, QLineEdit, QVBoxLayout, QHBoxLayout, QPushButton, QApplication
-from mathLib import evaluate_expression
+from PySide6.QtCore import QRegularExpression
+from PySide6.QtGui import QFont, QRegularExpressionValidator, QIcon
+from PySide6.QtWidgets import QWidget, QLineEdit, QVBoxLayout, QPushButton, QApplication, QGridLayout, QSizePolicy
 
+from mathLib import MathLib
 
+class GUI(QWidget):
 
-
-class Calculator(QWidget):
     def __init__(self):
+
+        # ChatGPT said this should be here
         super().__init__()
-        print("Inicializace proběhla správně!")
 
+        # Setting window title
         self.setWindowTitle("Kalkulačka")
-        self.setGeometry(100, 100, 300, 400)
 
-        self.expression_field = QLineEdit(self)
-        self.expression_field.setReadOnly(True)
-        self.expression_field.setAlignment(Qt.AlignmentFlag.AlignRight)
+        # Setting window icon
+        self.setWindowIcon(QIcon("calc_icon.png"))
 
-        self.result_field = QLineEdit(self)
-        self.result_field.setReadOnly(True)
-        self.result_field.setAlignment(Qt.AlignmentFlag.AlignRight)
+        # Creating value_field (where the expression is written)
+        self.value_field = QLineEdit(self)
 
-        font = QFont()
-        font.setPointSize(14)
-        self.expression_field.setFont(font)
-        font.setPointSize(24)
-        self.result_field.setFont(font)
+        # Setting limitations on value_field inputs using regex
+        regex = QRegularExpression("[0-9+*/\\-!%().^√]+")
+        validator = QRegularExpressionValidator(regex, self.value_field)
+        self.value_field.setValidator(validator)
 
-        self.expression_field.setFocusPolicy(Qt.NoFocus)
-        self.expression_field.setStyleSheet("border: none; background: transparent;")
-        self.expression_field.setFixedHeight(30)
+        # Connecting value field to on_text_changed listener
+        self.value_field.textChanged.connect(lambda: self.on_text_changed())
 
+        # Connecting value field to on_cursor_position_changed listener
+        self.value_field.cursorPositionChanged.connect(self.on_cursor_position_changed)
+
+        # Creating value_field_history to be used in after-evaluation care
+        self.value_field_history = ""
+
+        # Creating main layout
         self.main_layout = QVBoxLayout(self)
-        self.button_layout = QVBoxLayout()
-        self.main_layout.addWidget(self.expression_field)
-        self.main_layout.addWidget(self.result_field)
+
+        # Adding value_field in layout
+        self.main_layout.addWidget(self.value_field)
+
+        # Creating button layout
+        self.button_layout = QGridLayout()
+
+        # Adding main layout in button layout
         self.main_layout.addLayout(self.button_layout)
 
+        # Defining buttons
         self.buttons = [
-            ['7', '8', '9', '/', 'C'],
-            ['4', '5', '6', '*', 'CE'],
-            ['1', '2', '3', '-', '√'],
-            ['0', '.', '=', '+', '!']
+            ['^', '!', 'C', '⌫'],
+            ['(', ')', '√', '/'],
+            ['7', '8', '9', '*'],
+            ['4', '5', '6', '-'],
+            ['1', '2', '3', '+'],
+            ['%', '0', '.', '=']
         ]
 
-        for row in self.buttons:
-            row_layout = QHBoxLayout()
-            for btn_text in row:
+        # Adding buttons to the layout
+        for row_index, row in enumerate(self.buttons):
+            for col_index, btn_text in enumerate(row):
+                button = QPushButton(btn_text, self)
 
-                button = QPushButton(btn_text)
-                button.click()
+                # Setting button minimum size and dynamic expansion
+                button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+                button.setMinimumSize(70, 70)
 
+                # Setting button font and text size
                 button_font = QFont()
-                button_font.setPointSize(18)
+                button_font.setPointSize(20)
                 button.setFont(button_font)
 
-                button.setFixedSize(60, 60)
-
+                # Adding button in button_layout
+                self.button_layout.addWidget(button, row_index, col_index)
                 button.clicked.connect(self.on_button_click)
-                row_layout.addWidget(button)
 
-            self.button_layout.addLayout(row_layout)
-
-        self.result_text = '0'
-        self.result_field.setText(self.result_text)
-        self.expression_text = ''
-        self.override_result_text = False
-        self.last_sender_expression = ''
-        self.last_sender_text = ''
-        self.key_pressed = ''
-        self.enter_clicked = False
-
-        self.key = None
-
-
-
+        # Is set true when expression is evaluated for better aftercare
+        self.result_flag = False
 
     def on_button_click(self):
+
         button = self.sender()
-        if button is not None:
-            self.handle_input(button.text())
 
-    def handle_input(self, key_pressed):
+        if button.text() == "=":
 
-        button_operators = ['+', '-', '*', '/', '^']
-        button_numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+            # If value_field is not empty
+            # - save value_field in value_field_history for after-evaluation care,
+            # - evaluate expression,
+            # - write result in value_field
+            if self.value_field.text() != "":
 
-        if key_pressed in button_numbers:
-            print("KEY IN NUMBERS")
+                self.value_field_history = self.value_field.text()
+                result = MathLib.evaluate_expression(self.value_field.text())
+                self.value_field.setText(result)
 
-            if self.enter_clicked:
-                self.result_text += key_pressed
-                self.expression_text = ''
-            if self.override_result_text:
-                self.result_text = key_pressed
-                self.override_result_text = False
-            else:
-                self.result_text += key_pressed
-                print("RESULT CHANGED:", self.result_text)
+                # Set result_flag, because result was evaluated
+                self.result_flag = True
 
-            self.enter_clicked = False
+        elif button.text() == "C":
 
-        elif key_pressed in button_operators:  # co se stříškou?
-            print("KEY IN BUTTONS")
-            self.enter_clicked = False
+            # Reset result_flag
+            self.result_flag = False
 
-            if self.expression_text == '':
-                self.expression_text = '0'
-                self.expression_text += key_pressed
-            elif self.expression_text == '' and self.result_text != '':
-                self.expression_text = self.result_text
-                self.expression_text += key_pressed
-            elif self.expression_text[-1] not in ['+', '-', '*', '/']:
-                if self.expression_text[-1] == '=':
-                    self.expression_text = self.expression_text[:-1]
-                self.expression_text += self.result_text
-                self.expression_text = evaluate_expression(self.expression_text)
-                self.result_text = self.expression_text
-                self.expression_text += key_pressed
-                self.override_result_text = True
-            else:
-                self.expression_text[-1] = key_pressed
+            # Delete content from value_field
+            self.value_field.setText("")
 
-        elif key_pressed == '=':
+        elif button.text() == "⌫":
 
-            self.enter_clicked = True
+            # Delete char at cursor_position
 
-            if self.last_sender_text in button_operators:
-                self.expression_text += self.result_text
-                self.result_text = evaluate_expression(self.expression_text)
-                self.expression_text += '='
-            elif self.enter_clicked:
-                self.expression_text = self.result_text + self.last_sender_expression
-                self.result_text = evaluate_expression(self.expression_text)
-                self.expression_text += '='
-            else:
-                self.expression_text += self.result_text
-                self.result_text = self.expression_text
-                self.result_text = evaluate_expression(self.result_text)
-                self.expression_text += '='
+            current_text = self.value_field.text()
+            cursor_position = self.value_field.cursorPosition()
 
-        elif key_pressed == 'backspace':
-            print("BACKSPACE")
-            self.result_text = self.result_text[:-1]
+            text_before_cursor = current_text[:cursor_position]
+            text_after_cursor = current_text[cursor_position:]
 
-        # elif button == 'C':
-        #    pass
-        # elif button == 'CE':
-        #    pass
+            new_text = text_before_cursor[:-1] + text_after_cursor
+            self.value_field.setText(new_text)
+            self.value_field.setCursorPosition(cursor_position - 1)
 
-        self.result_field.setText(self.result_text)
-        self.expression_field.setText(self.expression_text)
-
-        if self.last_sender_expression in button_operators and self.key_pressed not in button_operators:
-            self.last_sender_expression += self.key_pressed
-        elif self.last_sender_expression in button_operators and self.key_pressed in button_operators:
-            self.last_sender_expression = self.key_pressed
-
-        self.last_sender_text = self.key_pressed
-
-    def keyPressEvent(self, event: QKeyEvent):
-        key = event.text()
-        print("KEY EVENT:", key)
-        if key.isdigit() or key in "+-*/.=C":
-            self.handle_input(key)
-        elif event.key() == Qt.Key_Enter or event.key() == Qt.Key_Return:
-            self.handle_input('=')
-        elif event.key() == Qt.Key_Backspace:
-            event.accept()
-            print("backspace")
-            if self.result_text != '':
-                self.result_text = self.result_text[:-1]
-                self.result_field.setText(self.result_text)
         else:
-            super().keyPressEvent(event)
-        event.accept()
+
+            # Add char at cursor_position
+
+            current_text = self.value_field.text()
+            cursor_position = self.value_field.cursorPosition()
+
+            text_before_cursor = current_text[:cursor_position]
+            text_after_cursor = current_text[cursor_position:]
+
+            new_text = text_before_cursor + button.text() + text_after_cursor
+            self.value_field.setText(new_text)
+            self.value_field.setCursorPosition(cursor_position + 1)
+
+        # Set focus back on the value_field
+        self.value_field.setFocus()
+
+    def on_text_changed(self):
+
+        # Setting text input restrictions and managing the after-evaluation care
+
+        text = self.value_field.text()
+        if text == "":
+            self.result_flag = False
+
+        ### Input restrictions
+
+        # operators = "+-*/%!√^"
+        # index = 0
+        # while index < len(text):
+        #
+        #     if index + 1 < len(text) and text[index] in operators and text[index + 1] in operators:
+        #         if text[index] != "√" and text[index + 1] == "√":
+        #             pass
+        #         else:
+        #             print("TEXT:", text)
+        #             text = text[:index] + text[index + 1:]
+        #             print("TEXT2:", text)
+        #             self.value_field.setText(text)
+        #             self.value_field.setCursorPosition(cursor_position - 1)
+        #
+        #             index -= 1
+        #
+        #     index += 1
+
+        ### After-evaluation care
+
+        # Result is printed and we are choosing what do to next
+        if self.result_flag:
+
+            # If user adds digit, we expect he wants to start new equation
+            if text[-1].isdigit():
+
+                # Safely giving value_field user's digit with blockSignals() to avoid infinite recursion and interfering
+                # between on_text_changed and on_cursor_position_changed
+                self.value_field.blockSignals(True)
+                self.value_field.setText(text[-1])
+                self.value_field.blockSignals(False)
+
+            # If an error message was printed
+            elif text[:5] == "Error":
+
+                # Safely emptying value_field with blockSignals() to avoid infinite recursion and interfering between
+                # on_text_changed and on_cursor_position_changed
+                self.value_field.blockSignals(True)
+                self.value_field.setText("")
+                self.value_field.blockSignals(False)
+
+            # If user adds operator, we expect he wants to create new equation using result from previous equation so we
+            # do not delete the results it and simply let user add new symbol in value_field
+
+            # result_flag set to false, because we are no more in the state of printing results
+            self.result_flag = False
+
+    def on_cursor_position_changed(self, old_pos, new_pos):
+
+        # Managing the after-evaluation care
+
+        # This function is needed to restrict user's interfering with printed "Error" message. With any cursor
+        # position change the value_field_history is printed on the screen, enabling the user to correct the equation
+
+        # Result is printed and we are choosing what do to next
+        if self.result_flag:
+
+            # Safely giving value_field the value_field_history with blockSignals() to avoid infinite recursion and
+            # interfering between on_text_changed and on_cursor_position_changed
+            self.value_field.blockSignals(True)
+            self.value_field.setText(self.value_field_history)
+            self.value_field.blockSignals(False)
+
+            # result_flag set to false, because we are no more in the state of printing results
+            self.result_flag = False
+
+    def keyPressEvent(self, event):
+
+        # This function is only needed to handle the enter-pressed event
+
+        # If enter (16777220) is pressed, evaluate, print result
+        if event.key() == 16777220 and self.value_field.text() != "":
+
+            self.value_field_history = self.value_field.text()
+            new_text = MathLib.evaluate_expression(self.value_field.text())
+            self.value_field.setText(new_text)
+            self.result_flag = True
+
+        # ChatGPT said this should be here
+        super().keyPressEvent(event)
+
+    def resizeEvent(self, event):
+
+        # ChatGPT said this should be here
+        super().resizeEvent(event)
+
+        # Change font size based on window height
+        window_height = self.height()
+
+        # If the window height is greater than 600, set font size to 48
+        if window_height > 600:
+
+            font = QFont()
+            font.setPointSize(48)
+            self.value_field.setFont(font)
+
+        # Else set font size to 36
+        else:
+
+            font = QFont()
+            font.setPointSize(36)
+            self.value_field.setFont(font)
 
 if __name__ == '__main__':
+
     app = QApplication(sys.argv)
-    calculator = Calculator()
+    calculator = GUI()
     calculator.show()
     sys.exit(app.exec())
