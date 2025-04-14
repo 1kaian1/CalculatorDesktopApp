@@ -90,7 +90,8 @@ class MathLib:
             expression = re.sub(
                 r'(?<=[^+\-*/%!√^])\(',
                 r'*(',
-                expression)
+                expression
+            )
 
             # Evaluating parentheses
             while '(' in expression:
@@ -205,7 +206,8 @@ class MathLib:
             expression = re.sub(
                 r'(\d+\.?\d*)([+\-*/])(-?\d+\.?\d*)%',
                 lambda m: str(MathLib.percentage(float(m.group(1)), m.group(2), float(m.group(3)))),
-                expression)
+                expression
+            )
 
             # Evaluating double operators
             #
@@ -228,13 +230,12 @@ class MathLib:
             expression = re.sub(
                 r'[+\-]{2,}',
                 lambda m: '-' if m.group(0).count('-') % 2 else '+',
-                expression)
-
+                expression
+            )
 
             # If expression begins with minus, we add "0" at start
             if expression.startswith('-'):
                 expression = '0' + expression
-
 
             # Evaluating the rest of the expression (tokenization)
             #
@@ -245,9 +246,19 @@ class MathLib:
             # This pattern is set to look for a value that is either float, integer or operator. Nothing else can be in
             # our expression at this time.
             #
-            tokens = re.findall(r'\d+\.\d+|\d+|[-+*/]', expression)
+            tokens = re.findall(
+                r'\d+\.\d+|\d+|[-+*/]',
+                expression
+            )
 
-            print(tokens)
+            # This loops goes through every token and if it finds "*" or "/", it multiplies or divides the values on
+            # the left and on the right
+            i = 0
+            while i < len(tokens):
+                if tokens[i] in ('*', '/'):
+                    left = float(tokens[i - 1])
+                    operator = tokens[i]
+                    right = float(tokens[i + 1])
 
             # This loops goes through every token and if it finds "*" or "/", it multiplies or divides the values on
             # the left and on the right
