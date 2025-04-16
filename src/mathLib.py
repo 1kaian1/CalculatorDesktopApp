@@ -21,42 +21,80 @@ import re
 class MathLib:
 
     def __init__(self, expression):
+
+        self.original_expression = expression
         self.expression = expression
+        self.recursion = False
+
+    def evaluate_expression(self):
+        r"""
+        Evaluate given expression
+        """
+
+        print("Calling evaluate_expression")
+        print("Eval:", self.expression)
+        print("vvvvvvvvvv")
 
         try:
 
             # Evaluating parentheses
             self.evaluate_parentheses()
+            self.print_step()
 
             # Evaluating square root
             self.evaluate_sqrt()
+            self.print_step()
 
             # Evaluating factorial
             self.evaluate_factorial()
+            self.print_step()
 
             # Evaluating exponentation
             self.evaluate_power()
+            self.print_step()
 
             # Evaluating percentage
             self.evaluate_percentage()
+            self.print_step()
 
             # Evaluating double operators
             self.evaluate_double_operators()
-
-            # If expression begins with minus, we add "0" at start
-            self.add_zero_if_leading_sign()
+            self.print_step()
 
             # Evaluating multiplication and division
             self.evaluate_multiplication_and_division()
+            self.print_step()
 
             # Evaluating addition and subtraction
-            self.evaluate_addition_and_subtraction()
+            self.evaluate_addition_and_substraction()
+
+            print("Result:", self.expression)
+            print("----------")
 
         # If an error occured during the evaluation, error message is printed on the calculator's screen. More info in
         # console
         except (ZeroDivisionError, IndexError, ValueError) as e:
             print(e)
             self.expression = "Error"
+
+        return self.expression
+
+    def print_step(self):
+        r"""
+        Print evaluation step in console.
+        :return:
+        """
+
+        if not self.recursion and self.expression != self.original_expression:
+            print("Eval:", self.expression)
+        self.original_expression = self.expression
+
+    def get_result(self):
+        r"""
+        Return self.expression when requested.
+        """
+
+        return self.expression
 
     @staticmethod
     def add(a, b):
@@ -77,7 +115,7 @@ class MathLib:
         return a / b
 
     def evaluate_parentheses(self):
-        """
+        r"""
         Evaluating parentheses and adding '*' operator before parentheses if necessary.
 
         re.sub - „search and replace“ given pattern in expression
@@ -93,27 +131,42 @@ class MathLib:
         2. It recursively evaluates the innermost expressions within parentheses, replacing them with the result.
         """
 
-        # 1. Add '*' before parentheses if no operator is in front of '('
+        # Add '*' where implicit multiplication is likely intended
         self.expression = re.sub(
-            r'(\d|\)|!|%|√|\^)\(',  # Regex to detect numbers or operators before '('
-            r'\1*(',  # Add '*' before '('
+            r'(\d|\))\(',
+            r'\1*(',
+            self.expression
+        )
+        self.expression = re.sub(
+            r'\)(\d|\()',
+            r')*\1',
             self.expression
         )
 
-        self.expression = re.sub(
-            r'\)(\d)',  # Pokud je za závorkou číslo
-            r')*\1',  # Přidej '*' mezi závorku a číslo
-            self.expression
-        )
+        # Parentheses checking with a counter
+        count = 0
+        for c in self.expression:
+            if c == '(':
+                count += 1
+            elif c == ')':
+                count -= 1
+                if count < 0:
+                    raise ValueError("Error: Too many closing parentheses")
+        if count != 0:
+            raise ValueError("Error: Too many opening parentheses")
 
-        # 2. Evaluate the parentheses recursively
+        # Evaluate the parentheses recursively
         while '(' in self.expression:
+
             # Find the innermost parentheses
             inner_expr = re.search(r'\(([^()]+)\)', self.expression)
 
             if inner_expr:
+
                 # Recursively evaluating inner expression
-                result = MathLib(inner_expr.group(1)).get_result()
+                self.recursion = True
+                result = MathLib(inner_expr.group(1)).evaluate_expression()
+                self.recursion = False
 
                 # Replace the evaluated result back into the expression
                 self.expression = self.expression.replace(inner_expr.group(0), result)
@@ -121,8 +174,10 @@ class MathLib:
             else:
                 raise ValueError("Error: Unable to find a properly closed pair of parentheses")
 
+        return self
+
     def evaluate_sqrt(self):
-        """
+        r"""
         Evaluating square root
 
         re.findall - „find all matches“ of the given pattern in expression
@@ -157,8 +212,11 @@ class MathLib:
 
             self.expression = self.expression.replace(f"{degree_str}√{number_str}", str(result))
 
+        return self
+
+
     def evaluate_factorial(self):
-        """
+        r"""
         Evaluating factorial
 
         re.findall - „find all matches“ of the given pattern in expression
@@ -185,8 +243,10 @@ class MathLib:
 
             self.expression = self.expression.replace(f"{n_str}!", str(result))
 
+        return self
+
     def evaluate_power(self):
-        """
+        r"""
         Evaluating exponentiation
 
         re.findall - „find all matches“ of the given pattern in expression
@@ -210,8 +270,10 @@ class MathLib:
 
             self.expression = self.expression.replace(f"{base_str}^{exponent_str}", str(result))
 
+        return self
+
     def evaluate_percentage(self):
-        """
+        r"""
         Evaluating percentage
 
         re.findall - „find all matches“ of the given pattern in expression
@@ -259,63 +321,50 @@ class MathLib:
 
             self.expression = self.expression.replace(f"{num1_str}{operator}{num2_str}%", str(result))
 
+        return self
+
     def evaluate_double_operators(self):
-        """
-        # Evaluating double operators
-        #
-        # re.sub - „search and replace“ given pattern in expression
-        # lambda - anonymous function (could also be overwritten using def, but not necessary)
-        #
-        #        [+\-]{2,}
-        #   group(0)^
-        #
-        # group(0) - plus or minus two or more times
-        #
-        # This function replaces every two-or-more operators with the correct equal one
-        #
-        # Examples:
-        #   -- = +
-        #   +-+ = -
-        #   -+- = +
-        #   1+2--3++4+-+5-+-6 = 1+2+3+4-5+6
-        #
+        r"""
+        Evaluating double operators
+
+        re.sub - „search and replace“ given pattern in expression
+        lambda - anonymous function (could also be overwritten using def, but not necessary)
+
+                [+\-]{2,}
+            group(0)^
+
+        group(0) - plus or minus two or more times
+
+        This function replaces every two-or-more operators with the correct equal one
+
+        Examples:
+            -- = +
+            +-+ = -
+            -+- = +
+            1+2--3++4+-+5-+-6 = 1+2+3+4-5+6
         """
 
         self.expression = re.sub(
-            r'[+\-]{2,}',  # Find sequences of two or more consecutive + or - signs
-            lambda m: '-' if m.group(0).count('-') % 2 else '+',  # Replace with + or - based on the count of '-'
+            r'[+\-]{2,}',
+            lambda m: '-' if m.group(0).count('-') % 2 else '+',
             self.expression
         )
 
-    def add_zero_if_leading_sign(self):
-        """
-        # If expression begins with minus or plus, we add "0" at start
-        #
-        # This function checks if the expression starts with a '+' or '-' sign
-        # If it does, it adds a "0" before the sign to ensure proper evaluation
-        #
-        # Examples:
-        #   "-5+3" becomes "0-5+3"
-        #   "+7-2" becomes "0+7-2"
-        #
-        # This is important for expressions like "-5+3" to ensure they are parsed correctly
-        #
+        return self
+
+    def evaluate_multiplication_and_division(self):
+        r"""
+        This function processes the expression for multiplication '*' and division '/' operations.
+
+        It loops through the expression and if it finds '*' or '/', it performs the operation between
+        the number on the left and the number on the right, then replaces the operation with the result.
+
+        Returns:
+           The modified expression with * and / operations resolved.
         """
 
         if self.expression.startswith('-') or self.expression.startswith('+'):
             self.expression = '0' + self.expression
-
-    def evaluate_multiplication_and_division(self):
-        """
-        # This function processes the expression for multiplication '*' and division '/' operations.
-        #
-        # It loops through the expression and if it finds '*' or '/', it performs the operation between
-        # the number on the left and the number on the right, then replaces the operation with the result.
-        #
-        # Returns:
-        #   The modified expression with * and / operations resolved.
-        #
-        """
 
         # Tokenize the expression
         tokens = re.findall(r'\d+\.\d+|\d+|[-+*/]', self.expression)
@@ -325,15 +374,20 @@ class MathLib:
             if tokens[i] in ('*', '/'):
                 left = float(tokens[i - 1])
                 operator = tokens[i]
-                right = float(tokens[i + 1])
+
+                if tokens[i + 1] in ('-', '+') and (i + 2 < len(tokens)):
+                    right = float(tokens[i + 1] + tokens[i + 2])
+                    del tokens[i + 1:i + 3]
+                else:
+                    right = float(tokens[i + 1])
+                    del tokens[i + 1]
 
                 if operator == '*':
                     result = MathLib.multiply(left, right)
                 elif operator == '/':
                     result = MathLib.divide(left, right)
 
-                # Round the result and replace the original tokens
-                result = round(result, 3) if not resZjult.is_integer() else int(result)
+                result = round(result, 3) if not result.is_integer() else int(result)
                 tokens[i - 1] = result
                 del tokens[i:i + 2]
                 i -= 1
@@ -343,17 +397,21 @@ class MathLib:
         # Rebuild the expression with the evaluated tokens
         self.expression = ''.join(map(str, tokens))
 
-    def evaluate_addition_and_subtraction(self):
+        return self
+
+    def evaluate_addition_and_substraction(self):
+        r"""
+        This function processes the expression for addition '+' and subtraction '-' operations.
+
+        It loops through the expression and if it finds '+' or '-', it performs the operation between
+        the number on the left and the number on the right, then updates the result.
+
+        Returns:
+           The final result after performing the + and - operations.
         """
-        # This function processes the expression for addition '+' and subtraction '-' operations.
-        #
-        # It loops through the expression and if it finds '+' or '-', it performs the operation between
-        # the number on the left and the number on the right, then updates the result.
-        #
-        # Returns:
-        #   The final result after performing the + and - operations.
-        #
-        """
+
+        if self.expression.startswith('-') or self.expression.startswith('+'):
+            self.expression = '0' + self.expression
 
         # Tokenize the expression
         tokens = re.findall(r'\d+\.\d+|\d+|[-+*/]', self.expression)
@@ -373,5 +431,4 @@ class MathLib:
 
         self.expression = str(round(result, 3)) if not result.is_integer() else str(int(result))
 
-    def get_result(self):
-        return self.expression
+        return self

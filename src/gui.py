@@ -114,7 +114,7 @@ class GUI(QWidget):
             if self.value_field.text() != "":
 
                 self.value_field_equation_preserved = self.value_field.text()
-                result = MathLib(self.value_field.text()).get_result()
+                result = MathLib(self.value_field.text()).evaluate_expression()
                 self.value_field.setText(result)
 
                 # Set result_flag, because result was evaluated
@@ -256,7 +256,7 @@ class GUI(QWidget):
         if event.key() == 16777220 and self.value_field.text() != "":
 
             self.value_field_equation_preserved = self.value_field.text()
-            new_text = MathLib(self.value_field.text()).get_result()
+            new_text = MathLib(self.value_field.text()).evaluate_expression()
             self.value_field.setText(new_text)
             self.result_flag = True
 
