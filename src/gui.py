@@ -15,11 +15,11 @@
 
 # Copyright (c) 2025 Jan Frantisek Levicek, xlevic02
 # Copyright (c) 2025 Jakub Sebela, xsebelj00
-# Copyright (c) 2025 Jan Kai Marek, xmarekj00
+# Copyright (c) 2025 Jan Kai Marek, xmarekj00;
 
 import sys
 
-from PySide6.QtCore import QRegularExpression
+from PySide6.QtCore import QRegularExpression, Qt
 from PySide6.QtGui import QFont, QRegularExpressionValidator, QIcon
 from PySide6.QtWidgets import QWidget, QLineEdit, QVBoxLayout, QPushButton, QApplication, QGridLayout, QSizePolicy
 
@@ -52,8 +52,11 @@ class GUI(QWidget):
         # Connecting value field to on_cursor_position_changed listener
         self.value_field.cursorPositionChanged.connect(self.on_cursor_position_changed)
 
-        # Creating value_field_history to be used in after-evaluation care
-        self.value_field_history = ""
+        # Creating value_field_equation_preserved to be used in after-evaluation care
+        self.value_field_equation_preserved = ""
+
+
+        self.value_field_instant_history = ""
 
         # Creating main layout
         self.main_layout = QVBoxLayout(self)
@@ -105,13 +108,13 @@ class GUI(QWidget):
         if button.text() == "=":
 
             # If value_field is not empty
-            # - save value_field in value_field_history for after-evaluation care,
+            # - save value_field in value_field_equation_preserved for after-evaluation care,
             # - evaluate expression,
             # - write result in value_field
             if self.value_field.text() != "":
 
-                self.value_field_history = self.value_field.text()
-                result = MathLib.evaluate_expression(self.value_field.text())
+                self.value_field_equation_preserved = self.value_field.text()
+                result = MathLib(self.value_field.text()).get_result()
                 self.value_field.setText(result)
 
                 # Set result_flag, because result was evaluated
@@ -129,15 +132,23 @@ class GUI(QWidget):
 
             # Delete char at cursor_position
 
-            current_text = self.value_field.text()
-            cursor_position = self.value_field.cursorPosition()
+            if self.result_flag:
 
-            text_before_cursor = current_text[:cursor_position]
-            text_after_cursor = current_text[cursor_position:]
+                self.value_field.setText("")
 
-            new_text = text_before_cursor[:-1] + text_after_cursor
-            self.value_field.setText(new_text)
-            self.value_field.setCursorPosition(cursor_position - 1)
+                self.result_flag = False
+
+            else:
+
+                current_text = self.value_field.text()
+                cursor_position = self.value_field.cursorPosition()
+
+                text_before_cursor = current_text[:cursor_position]
+                text_after_cursor = current_text[cursor_position:]
+
+                new_text = text_before_cursor[:-1] + text_after_cursor
+                self.value_field.setText(new_text)
+                self.value_field.setCursorPosition(cursor_position - 1)
 
         else:
 
@@ -189,8 +200,11 @@ class GUI(QWidget):
         # Result is printed and we are choosing what do to next
         if self.result_flag:
 
+            if text == self.value_field_instant_history[:-1]:
+                self.value_field.setText("")
+
             # If user adds digit, we expect he wants to start new equation
-            if text[-1].isdigit():
+            elif text[-1].isdigit():
 
                 # Safely giving value_field user's digit with blockSignals() to avoid infinite recursion and interfering
                 # between on_text_changed and on_cursor_position_changed
@@ -213,20 +227,22 @@ class GUI(QWidget):
             # result_flag set to false, because we are no more in the state of printing results
             self.result_flag = False
 
+        self.value_field_instant_history = self.value_field.text()
+
     def on_cursor_position_changed(self, old_pos, new_pos):
 
         # Managing the after-evaluation care
 
         # This function is needed to restrict user's interfering with printed "Error" message. With any cursor
-        # position change the value_field_history is printed on the screen, enabling the user to correct the equation
+        # position change the value_field_equation_preserved is printed on the screen, enabling the user to correct the equation
 
         # Result is printed and we are choosing what do to next
         if self.result_flag:
 
-            # Safely giving value_field the value_field_history with blockSignals() to avoid infinite recursion and
+            # Safely giving value_field the value_field_equation_preserved with blockSignals() to avoid infinite recursion and
             # interfering between on_text_changed and on_cursor_position_changed
             self.value_field.blockSignals(True)
-            self.value_field.setText(self.value_field_history)
+            self.value_field.setText(self.value_field_equation_preserved)
             self.value_field.blockSignals(False)
 
             # result_flag set to false, because we are no more in the state of printing results
@@ -239,8 +255,8 @@ class GUI(QWidget):
         # If enter (16777220) is pressed, evaluate, print result
         if event.key() == 16777220 and self.value_field.text() != "":
 
-            self.value_field_history = self.value_field.text()
-            new_text = MathLib.evaluate_expression(self.value_field.text())
+            self.value_field_equation_preserved = self.value_field.text()
+            new_text = MathLib(self.value_field.text()).get_result()
             self.value_field.setText(new_text)
             self.result_flag = True
 
