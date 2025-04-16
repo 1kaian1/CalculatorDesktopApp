@@ -260,6 +260,17 @@ class MathLib:
                     operator = tokens[i]
                     right = float(tokens[i + 1])
 
+                    if operator == '*':
+                        result = MathLib.multiply(left, right)
+                    elif operator == '/':
+                        result = MathLib.divide(left, right)
+
+                    tokens[i - 1] = result
+                    del tokens[i:i + 2]
+                    i -= 1
+                else:
+                    i += 1
+
             # This loops goes through every token and if it finds "*" or "/", it multiplies or divides the values on
             # the left and on the right
             i = 0
