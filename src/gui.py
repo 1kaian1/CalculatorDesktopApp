@@ -35,9 +35,6 @@ class GUI(QWidget):
         # Setting window title
         self.setWindowTitle("Kalkulačka")
 
-        # Setting window icon
-        self.setWindowIcon(QIcon("calc_icon.png"))
-
         # Creating value_field (where the expression is written)
         self.value_field = QLineEdit(self)
 
@@ -55,7 +52,7 @@ class GUI(QWidget):
         # Creating value_field_equation_preserved to be used in after-evaluation care
         self.value_field_equation_preserved = ""
 
-
+        # Setting value field instant history
         self.value_field_instant_history = ""
 
         # Creating main layout
@@ -100,6 +97,41 @@ class GUI(QWidget):
 
         # Is set true when expression is evaluated for better aftercare
         self.result_flag = False
+
+        self.setStyleSheet("""
+            QWidget {
+            background-color: #1e1e1e;  /* Tmavé pozadí */
+            }
+
+            QLineEdit {
+            background-color: #121212;  /* Tmavé pozadí pro input */
+            color: #ffffff;             /* Bílý text */
+            border: 1px solid #444444;  /* Tmavý rámeček */
+            border-radius: 6px;         /* Zaoblení rohů */
+            padding: 10px;
+            }
+
+            QPushButton {
+            background-color: #333333;  /* Tmavě šedé pozadí */
+            color: #ffffff;             /* Bílý text */
+            border-radius: 10px;        /* Zaoblené rohy */
+            font-size: 20px;            /* Velikost písma */
+            padding: 15px;
+            }
+
+            QPushButton:hover {
+            background-color: #4d4d4d;  /* Světlejší šedá na hover */
+            }
+
+            QPushButton:pressed {
+            background-color: #666666;  /* Tmavší šedá při stisknutí */
+            }
+
+            QPushButton:disabled {
+            background-color: #2c2c2c;  /* Tmavá barva pro zakázané tlačítko */
+            color: #555555;             /* Světle šedý text pro zakázané tlačítko */
+            }
+        """)
 
     def on_button_click(self):
 
