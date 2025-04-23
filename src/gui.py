@@ -1,75 +1,244 @@
-import tkinter as tk
-root = tk.Tk()
+# This file is part of Calculator_app.
+#
+# Calculator_app is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Calculator_app is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-root.title("Kalkulacka")
-root.geometry("600x800+100+200")
-root.resizable(False,False)
-root.configure(bg="#DDDDDD")
+# Copyright (c) 2025 Jan Frantisek Levicek, xlevic02
+# Copyright (c) 2025 Jakub Sebela, xsebelj00
+# Copyright (c) 2025 Jan Kai Marek, xmarekj00;
 
-buttonWidth = 4
-buttonHeight = 2
-buttonColor = "#000000"
-textColor = "#FFFFFF"
-font = ("arial",30)
+import sys
 
-buttonX = (15, 165, 315, 465)
-buttonY = (135, 255, 375, 495, 615)
+from PySide6.QtCore import QRegularExpression, Qt
+from PySide6.QtGui import QFont, QRegularExpressionValidator, QIcon
+from PySide6.QtWidgets import QWidget, QLineEdit, QVBoxLayout, QPushButton, QApplication, QGridLayout, QSizePolicy
 
-label = tk.Label(root,width=23, height=2, font=("arial",30),bg="#7cc7a9").place(x=12,y=12)
-
-tk.Button(root,text="!",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[0], y=buttonY[0])
-tk.Button(root,text="x^n",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[1], y=buttonY[0])
-tk.Button(root,text="n√x",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[2], y=buttonY[0])
-tk.Button(root,text="%",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[3], y=buttonY[0])
-
-tk.Button(root,text="7",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[0], y=buttonY[1])
-tk.Button(root,text="8",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[1], y=buttonY[1])
-tk.Button(root,text="9",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[2], y=buttonY[1])
-tk.Button(root,text="/",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[3], y=buttonY[1])
-
-tk.Button(root,text="4",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[0], y=buttonY[2])
-tk.Button(root,text="5",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[1], y=buttonY[2])
-tk.Button(root,text="6",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[2], y=buttonY[2])
-tk.Button(root,text="*",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[3], y=buttonY[2])
-
-tk.Button(root,text="1",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[0], y=buttonY[3])
-tk.Button(root,text="2",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[1], y=buttonY[3])
-tk.Button(root,text="3",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[2], y=buttonY[3])
-tk.Button(root,text="-",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[3], y=buttonY[3])
-
-tk.Button(root,text="0",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[0], y=buttonY[4])
-tk.Button(root,text=".",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[1], y=buttonY[4])
-tk.Button(root,text="=",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[2], y=buttonY[4])
-tk.Button(root,text="+",width=buttonWidth,height=buttonHeight,fg=textColor,bg=buttonColor,font=font).place(x=buttonX[3], y=buttonY[4])
-
-tk.Button(root,text="C",width=2,height=1,fg="red",bg="#FFFFFF",font=font).place(x=165, y=735)
-tk.Button(root,text="CE",width=2,height=1,fg="#FF0000",bg="white",font=font).place(x=315, y=735)
+from mathLib import MathLib
 
 
-global equation_text
+class GUI(QWidget):
 
-def show(label, text):
-    label.config(text = equation)
+    def __init__(self):
 
-def buttonPress(num):
-    equation_text = equation_text + str(num)
-    show(label, equation_text)
+        # Calling QWidget constructor
+        super().__init__()
 
+        # Setting window title
+        self.setWindowTitle("Kalkulačka")
 
-    
+        # Creating value_field (where the expression is written)
+        self.value_field = QLineEdit(self)
 
-def calculate():
-    global equation
-    result = ""
-    
-    if (equation != ""):
-        try:
-            result = eval(equation)
-        except:
-            result = ZeroDivisionError
-            equation = ""
-            
-    label.config(text = equation)
+        # Setting limitations on value_field inputs using regex
+        regex = QRegularExpression("[0-9+*/\\-!%().^√]+")
+        validator = QRegularExpressionValidator(regex, self.value_field)
+        self.value_field.setValidator(validator)
 
-root.mainloop()
+        # Connecting value field to on_text_changed listener
+        self.value_field.textChanged.connect(lambda: self.on_text_changed())
 
+        # Connecting value field to on_cursor_position_changed listener
+        self.value_field.cursorPositionChanged.connect(self.on_cursor_position_changed)
+
+        # Creating backup for expression, used after evaluation
+        self.value_field_equation_preserved = ""
+
+        # Stores recent expression for caret-aware editing
+        self.value_field_instant_history = ""
+
+        # Creating main layout
+        self.main_layout = QVBoxLayout(self)
+
+        # Adding value_field to layout
+        self.main_layout.addWidget(self.value_field)
+
+        # Creating layout for buttons
+        self.button_layout = QGridLayout()
+
+        # Adding buttons layout into main layout
+        self.main_layout.addLayout(self.button_layout)
+
+        # Defining calculator buttons
+        self.buttons = [
+            ['^', '!', 'C', '⌫'],
+            ['(', ')', '√', '/'],
+            ['7', '8', '9', '*'],
+            ['4', '5', '6', '-'],
+            ['1', '2', '3', '+'],
+            ['%', '0', '.', '=']
+        ]
+
+        # Creating and adding buttons into layout
+        for row_index, row in enumerate(self.buttons):
+            for col_index, btn_text in enumerate(row):
+                button = QPushButton(btn_text, self)
+
+                # Expands to available space
+                button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+                button.setMinimumSize(70, 70)
+
+                # Setting font and size
+                button_font = QFont()
+                button_font.setPointSize(20)
+                button.setFont(button_font)
+
+                # Adding button into layout
+                self.button_layout.addWidget(button, row_index, col_index)
+                button.clicked.connect(self.on_button_click)
+
+        # True if result was recently evaluated, used for result post-processing
+        self.result_flag = False
+
+        # Setting dark UI theme
+        self.setStyleSheet("""
+            QWidget {
+            background-color: #1e1e1e;
+            }
+
+            QLineEdit {
+            background-color: #121212;
+            color: #ffffff;
+            border: 1px solid #444444;
+            border-radius: 6px;
+            padding: 10px;
+            }
+
+            QPushButton {
+            background-color: #333333;
+            color: #ffffff;
+            border-radius: 10px;
+            font-size: 20px;
+            padding: 15px;
+            }
+
+            QPushButton:hover {
+            background-color: #4d4d4d;
+            }
+
+            QPushButton:pressed {
+            background-color: #666666;
+            }
+
+            QPushButton:disabled {
+            background-color: #2c2c2c;
+            color: #555555;
+            }
+        """)
+
+    def on_button_click(self):
+        r"""
+        Called when any button is clicked.
+
+        Performs various actions depending on button label:
+        - "=" evaluates expression.
+        - "C" clears input.
+        - "⌫" deletes character at cursor.
+        - Otherwise, inserts clicked character at cursor.
+        """
+
+        button = self.sender()
+
+        if button.text() == "=":
+
+            # Evaluate expression only if not empty
+            if self.value_field.text() != "":
+                self.value_field_equation_preserved = self.value_field.text()
+                result = MathLib(self.value_field.text()).evaluate_expression()
+                self.value_field.setText(result)
+                self.result_flag = True
+
+        elif button.text() == "C":
+
+            # Clear input and reset flag
+            self.result_flag = False
+            self.value_field.setText("")
+
+        elif button.text() == "⌫":
+
+            # Delete character before cursor or clear field if result was just shown
+            if self.result_flag:
+                self.value_field.setText("")
+                self.result_flag = False
+            else:
+                current_text = self.value_field.text()
+                cursor_position = self.value_field.cursorPosition()
+
+                text_before_cursor = current_text[:cursor_position]
+                text_after_cursor = current_text[cursor_position:]
+
+                new_text = text_before_cursor[:-1] + text_after_cursor
+                self.value_field.setText(new_text)
+                self.value_field.setCursorPosition(cursor_position - 1)
+
+        else:
+
+            # Insert character at current cursor position
+            current_text = self.value_field.text()
+            cursor_position = self.value_field.cursorPosition()
+
+            text_before_cursor = current_text[:cursor_position]
+            text_after_cursor = current_text[cursor_position:]
+
+            new_text = text_before_cursor + button.text() + text_after_cursor
+            self.value_field.setText(new_text)
+            self.value_field.setCursorPosition(cursor_position + 1)
+
+        # Ensure cursor stays in value_field
+        self.value_field.setFocus()
+
+    def on_text_changed(self):
+        r"""
+        Called when value_field text changes.
+
+        Manages:
+        - After-evaluation state,
+        - Basic input restrictions.
+        """
+
+        text = self.value_field.text()
+        if text == "":
+            self.result_flag = False
+
+        # Managing user input after a result was evaluated
+        if self.result_flag:
+
+            if text == self.value_field_instant_history[:-1]:
+                self.value_field.setText("")
+
+            elif text[-1].isdigit():
+
+                # Start new equation with digit
+                self.value_field.blockSignals(True)
+                self.value_field.setText(text[-1])
+                self.value_field.blockSignals(False)
+
+            elif text[:5] == "Error":
+
+                # Clear error message
+                self.value_field.blockSignals(True)
+                self.value_field.setText("")
+                self.value_field.blockSignals(False)
+
+            # Result flag reset once user starts editing
+            self.result_flag = False
+
+        self.value_field_instant_history = self.value_field.text()
+
+    def on_cursor_position_changed(self, old_pos, new_pos):
+        r"""
+        Called when cursor position in value_field changes.
+
+        Mainly used to handle after-evaluation care and input restrictions.
+        """
+        # TODO: Extend with rules (if needed) to prevent placing cursor inside error messages or locked text.
+        pass
