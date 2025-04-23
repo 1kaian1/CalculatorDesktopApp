@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Calculator
+Exec=python3 /usr/local/src/main.py
+Icon=calculator
+Terminal=false
+Type=Application
+Categories=Utility;
