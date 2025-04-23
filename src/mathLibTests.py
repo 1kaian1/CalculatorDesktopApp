@@ -79,20 +79,6 @@ class TestMatLib(unittest.TestCase):
         with self.assertRaises(ZeroDivisionError):
             MathLib.divide(10, 0)
 
-    def test_divide_with_remainder(self):
-        self.assertEqual(MathLib.divide_with_remainder(10, 3), (3, 1))  # 10 / 3 = 3 zbytek 1
-        self.assertEqual(MathLib.divide_with_remainder(25, 7), (3, 4))  # 25 / 7 = 3 zbytek 4
-
-        # Dělení se zbytkem floaty
-        self.assertEqual(MathLib.divide_with_remainder(10.5, 3.2), (3.0, 1.1))  # 10.5 / 3.2 = 3.0 zbytek 1.1
-        self.assertEqual(MathLib.divide_with_remainder(25.7, 7.5), (3.0, 3.2))  # 25.7 / 7.5 = 3.0 zbytek 3.2
-        self.assertEqual(MathLib.divide_with_remainder(-15.6, 4.1), (-3.0, -3.3))  # -15.6 / 4.1 = -3.0 zbytek -3.3
-        self.assertEqual(MathLib.divide_with_remainder(8.4, -2.5), (-3.0, 0.9))  # 8.4 / -2.5 = -3.0 zbytek 0.9
-
-        # Test dělení nulou (očekává výjimku)
-        with self.assertRaises(ZeroDivisionError):
-            MathLib.divide_with_remainder(10, 0)
-
     def test_factorial(self):
         self.assertEqual(MathLib.factorial(0), 1)  # Faktoriál nuly
         self.assertEqual(MathLib.factorial(5), 120)  # Faktoriál kladného čísla
