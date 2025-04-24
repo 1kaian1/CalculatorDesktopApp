@@ -235,10 +235,65 @@ class GUI(QWidget):
         self.value_field_instant_history = self.value_field.text()
 
     def on_cursor_position_changed(self, old_pos, new_pos):
-        r"""
-        Called when cursor position in value_field changes.
 
-        Mainly used to handle after-evaluation care and input restrictions.
-        """
-        # TODO: Extend with rules (if needed) to prevent placing cursor inside error messages or locked text.
-        pass
+        # Managing the after-evaluation care
+
+        # This function is needed to restrict user's interfering with printed "Error" message. With any cursor
+        # position change the value_field_equation_preserved is printed on the screen, enabling the user to correct the equation
+
+        # Result is printed and we are choosing what do to next
+        if self.result_flag:
+
+            # Safely giving value_field the value_field_equation_preserved with blockSignals() to avoid infinite recursion and
+            # interfering between on_text_changed and on_cursor_position_changed
+            self.value_field.blockSignals(True)
+            self.value_field.setText(self.value_field_equation_preserved)
+            self.value_field.blockSignals(False)
+
+            # result_flag set to false, because we are no more in the state of printing results
+            self.result_flag = False
+
+    def keyPressEvent(self, event):
+
+        # This function is only needed to handle the enter-pressed event
+
+        # If enter (16777220) is pressed, evaluate, print result
+        if event.key() == 16777220 and self.value_field.text() != "":
+
+            self.value_field_equation_preserved = self.value_field.text()
+            new_text = MathLib(self.value_field.text()).evaluate_expression()
+            self.value_field.setText(new_text)
+            self.result_flag = True
+
+        # ChatGPT said this should be here
+        super().keyPressEvent(event)
+
+    def resizeEvent(self, event):
+
+        # ChatGPT said this should be here
+        super().resizeEvent(event)
+
+        # Change font size based on window height
+        window_height = self.height()
+
+        # If the window height is greater than 600, set font size to 48
+        if window_height > 600:
+
+            font = QFont()
+            font.setPointSize(48)
+            self.value_field.setFont(font)
+
+        # Else set font size to 36
+        else:
+
+            font = QFont()
+            font.setPointSize(36)
+            self.value_field.setFont(font)
+
+if __name__ == '__main__':
+
+    app = QApplication(sys.argv)
+    calculator = GUI()
+    calculator.show()
+    sys.exit(app.exec())
+

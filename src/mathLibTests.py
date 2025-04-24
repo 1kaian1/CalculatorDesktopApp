@@ -18,7 +18,6 @@
 import unittest
 from mathLib import MathLib
 
-
 class TestMatLib(unittest.TestCase):
     """Unit tests for the MathLib class."""
 
@@ -125,7 +124,6 @@ class TestMatLib(unittest.TestCase):
         self.assertEqual(MathLib("-5+3").evaluate_addition_and_substraction().expression, "-2")
         self.assertEqual(MathLib("0+5-3").evaluate_addition_and_substraction().expression, "2")
         self.assertEqual(MathLib("10-2+4-1+3").evaluate_addition_and_substraction().expression, "14")
-
 
 if __name__ == '__main__':
     unittest.main()
