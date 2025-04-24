@@ -82,7 +82,6 @@ class MathLib:
     def print_step(self):
         r"""
         Print evaluation step in console.
-        :return:
         """
 
         if not self.recursion and self.expression != self.original_expression:
@@ -95,24 +94,6 @@ class MathLib:
         """
 
         return self.expression
-
-    @staticmethod
-    def add(a, b):
-        return a + b
-
-    @staticmethod
-    def subtract(a, b):
-        return a - b
-
-    @staticmethod
-    def multiply(a, b):
-        return a * b
-
-    @staticmethod
-    def divide(a, b):
-        if b == 0:
-            raise ZeroDivisionError("Error: Division by zero")
-        return a / b
 
     def evaluate_parentheses(self):
         r"""
@@ -228,7 +209,7 @@ class MathLib:
         group(1) - one or more digits
         """
 
-        matches = re.findall(r'(\d+)!', self.expression)
+        matches = re.findall(r'(\d+(?:\.\d+)?)!', self.expression)
         for match in matches:
             n_str = match
 
@@ -279,78 +260,72 @@ class MathLib:
         re.findall - „find all matches“ of the given pattern in expression
         MathLib.percentage - calling MathLib func for percentage calculation
 
-                (\d+\.?\d*) ([+\-*/]) (-?\d+\.?\d*) %
-            group(1)^   group(2)^   group(3)^
+              (-?\d+\.?\d*) %
+            group(1)^
 
         group(1) - one or more digits, optional decimal part
-        group(3) - one or more digits, optional decimal part, possibly negative
-        group(2) - one operator (+, -, *, /)
-
-        In this function it is important, whether the operator is (1) "+" / "-" or (2) "*" / "/"
-        (1) The added or subtracted percentage value is evaluated from group(1) number
-            - example: 30-50% = 15
-            - Fifty percent of 15 is subtracted from 30, giving the result of 15.
-        (2) The multiplied or divided percentage value is evaluated from 1/group(3) number
-            - example: 100/50% = 200
-            - Fifty percent of 1 (1/2) is the divisor for 100, giving the result of 200.
-
-        Examples:
-        30-50% = 15
-        30+50% = 45
-        100/50% = 200
-        100*50% = 50
         """
 
-        matches = re.findall(r'(\d+\.?\d*)([+\-*/])(-?\d+\.?\d*)%', self.expression)
+        matches = re.findall(r'(\d+\.?\d*)%', self.expression)
         for match in matches:
-            num1_str, operator, num2_str = match
+            num_str = match
 
-            num1 = float(num1_str)
-            num2 = float(num2_str)
+            num1 = float(num_str)
+            #
+            # if operator == "+":
+            #     result = num1 + num2 / 100 * num1
+            # elif operator == "-":
+            #     result = num1 - num2 / 100 * num1
+            # elif operator == "*":
+            #     result = num1 * (num2 / 100)
+            # elif operator == "/":
+            #     result = num1 / (num2 / 100)
+            # else:
+            #     raise ValueError("Unsupported operator in percentage expression.")
 
-            if operator == "+":
-                result = num1 + num2 / 100 * num1
-            elif operator == "-":
-                result = num1 - num2 / 100 * num1
-            elif operator == "*":
-                result = num1 * (num2 / 100)
-            elif operator == "/":
-                result = num1 / (num2 / 100)
-            else:
-                raise ValueError("Unsupported operator in percentage expression.")
-
-            self.expression = self.expression.replace(f"{num1_str}{operator}{num2_str}%", str(result))
+            self.expression = self.expression.replace(f"{num_str}%", str(round(num1/100, 3)))
 
         return self
 
     def evaluate_double_operators(self):
         r"""
-        Evaluating double operators
+        Evaluating double operators including **, //, √√, ^^, !!, and others.
 
-        re.sub - „search and replace“ given pattern in expression
-        lambda - anonymous function (could also be overwritten using def, but not necessary)
-
-                [+\-]{2,}
-            group(0)^
-
-        group(0) - plus or minus two or more times
-
-        This function replaces every two-or-more operators with the correct equal one
+        This function replaces any number of consecutive operators with the correct one.
 
         Examples:
             -- = +
             +-+ = -
             -+- = +
-            1+2--3++4+-+5-+-6 = 1+2+3+4-5+6
-        """
+            ** = *
+            // = /
+            √√ = √
+            ^^ = ^
+            !! = !
 
+            1+2--3++4+-+5-+-6 = 1+2+3+4-5+6
+            """
+
+        # Handle + and - operators
         self.expression = re.sub(
-            r'[+\-]{2,}',
+            r'[+\-]+',
             lambda m: '-' if m.group(0).count('-') % 2 else '+',
             self.expression
         )
 
-        return self
+        # Handle ** operator (power)
+        self.expression = re.sub(
+            r'\*+',
+            '*',
+            self.expression
+        )
+
+        # Handle // operator (integer division)
+        self.expression = re.sub(
+            r'/+',
+            '/',
+            self.expression
+        )
 
     def evaluate_multiplication_and_division(self):
         r"""
@@ -369,23 +344,29 @@ class MathLib:
         # Tokenize the expression
         tokens = re.findall(r'\d+\.\d+|\d+|[-+*/]', self.expression)
 
+        print(tokens)
+
         i = 0
         while i < len(tokens):
+
+            print(tokens[i])
             if tokens[i] in ('*', '/'):
                 left = float(tokens[i - 1])
                 operator = tokens[i]
 
                 if tokens[i + 1] in ('-', '+') and (i + 2 < len(tokens)):
                     right = float(tokens[i + 1] + tokens[i + 2])
-                    del tokens[i + 1:i + 3]
+                    del tokens[i + 1:i + 2]
                 else:
                     right = float(tokens[i + 1])
-                    del tokens[i + 1]
+                    #del tokens[i + 1]
 
                 if operator == '*':
-                    result = MathLib.multiply(left, right)
+                    result = left * right
                 elif operator == '/':
-                    result = MathLib.divide(left, right)
+                    if right == 0:
+                        raise ZeroDivisionError("Error: Division by zero")
+                    result = left / right
 
                 result = round(result, 3) if not result.is_integer() else int(result)
                 tokens[i - 1] = result
@@ -423,9 +404,9 @@ class MathLib:
             next_number = float(tokens[i + 1])
 
             if operator == '+':
-                result = MathLib.add(result, next_number)
+                result += next_number
             elif operator == '-':
-                result = MathLib.subtract(result, next_number)
+                result -= next_number
 
             i += 2
 
