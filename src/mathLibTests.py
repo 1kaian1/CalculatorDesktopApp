@@ -19,9 +19,10 @@ import unittest
 from mathLib import MathLib
 
 class TestMatLib(unittest.TestCase):
+    """Unit tests for the MathLib class."""
 
     def test_evaluate_parentheses(self):
-
+        """Tests evaluation of expressions with parentheses, including nested and implicit multiplication cases."""
         self.assertEqual(MathLib("2+(3+4)").evaluate_parentheses().expression, "2+7")
         self.assertEqual(MathLib("2+(3*(1+2))").evaluate_parentheses().expression, "2+9")
         self.assertEqual(MathLib("2(3+4)").evaluate_parentheses().expression, "2*7")
@@ -34,7 +35,7 @@ class TestMatLib(unittest.TestCase):
         self.assertEqual(MathLib("2+(3+((1+1)+1))").evaluate_parentheses().expression, "2+6")
 
     def test_evaluate_sqrt(self):
-
+        """Tests correct evaluation of square roots and n-th roots, including handling of negative numbers and decimals."""
         self.assertAlmostEqual(float(MathLib("√9").evaluate_sqrt().expression), 3.0)
         self.assertAlmostEqual(float(MathLib("3√27").evaluate_sqrt().expression), 3.0)
         self.assertAlmostEqual(float(MathLib("4√16").evaluate_sqrt().expression), 2.0)
@@ -47,7 +48,7 @@ class TestMatLib(unittest.TestCase):
         self.assertRaises(ValueError, lambda: MathLib("2√-16").evaluate_sqrt())
 
     def test_evaluate_factorial(self):
-
+        """Tests evaluation of factorial expressions, including combinations with arithmetic and edge cases."""
         self.assertEqual(MathLib("0!").evaluate_factorial().expression, "1")
         self.assertEqual(MathLib("1!").evaluate_factorial().expression, "1")
         self.assertEqual(MathLib("3!").evaluate_factorial().expression, "6")
@@ -60,7 +61,7 @@ class TestMatLib(unittest.TestCase):
         self.assertRaises(ValueError, lambda: MathLib("4.5!").evaluate_factorial())
 
     def test_evaluate_power(self):
-
+        """Tests evaluation of exponentiation operations, including negative and fractional exponents."""
         self.assertEqual(MathLib("2^3").evaluate_power().expression, "8.0")
         self.assertEqual(MathLib("5^0").evaluate_power().expression, "1.0")
         self.assertEqual(MathLib("9^0.5").evaluate_power().expression, "3.0")
@@ -73,7 +74,7 @@ class TestMatLib(unittest.TestCase):
         self.assertEqual(MathLib("0^0").evaluate_power().expression, "1.0")
 
     def test_evaluate_percentage(self):
-
+        """Tests conversion of percentages to decimal values and combination of percentages in expressions."""
         self.assertEqual(MathLib("100%").evaluate_percentage().expression, "1.0")
         self.assertEqual(MathLib("50%").evaluate_percentage().expression, "0.5")
         self.assertEqual(MathLib("25%").evaluate_percentage().expression, "0.25")
@@ -86,7 +87,7 @@ class TestMatLib(unittest.TestCase):
         self.assertEqual(MathLib("3% + 5%").evaluate_percentage().expression, "0.03 + 0.05")
 
     def test_evaluate_double_operators(self):
-
+        """Tests simplification of expressions with multiple or conflicting operators (e.g. --, +-)."""
         self.assertEqual(MathLib("1+2--3").evaluate_double_operators().expression, "1+2+3")
         self.assertEqual(MathLib("5+-6").evaluate_double_operators().expression, "5-6")
         self.assertEqual(MathLib("3-+-4").evaluate_double_operators().evaluate_double_operators().expression, "3+4")
@@ -99,7 +100,7 @@ class TestMatLib(unittest.TestCase):
         self.assertEqual(MathLib("++2-+-3").evaluate_double_operators().expression, "+2+3")
 
     def test_evaluate_multiplication_and_division(self):
-
+        """Tests multiplication and division operations, including order of operations and fractional results."""
         self.assertEqual(MathLib("3*4").evaluate_multiplication_and_division().expression, "12")
         self.assertEqual(MathLib("10/2").evaluate_multiplication_and_division().expression, "5")
         self.assertEqual(MathLib("5/2").evaluate_multiplication_and_division().expression, "2.5")
@@ -112,7 +113,7 @@ class TestMatLib(unittest.TestCase):
         self.assertEqual(MathLib("0*100").evaluate_multiplication_and_division().expression, "0")
 
     def test_evaluate_addition_and_substraction(self):
-
+        """Tests basic addition and subtraction, including handling of leading signs and multiple operations."""
         self.assertEqual(MathLib("3+2").evaluate_addition_and_substraction().expression, "5")
         self.assertEqual(MathLib("5-3").evaluate_addition_and_substraction().expression, "2")
         self.assertEqual(MathLib("3+2-1").evaluate_addition_and_substraction().expression, "4")
