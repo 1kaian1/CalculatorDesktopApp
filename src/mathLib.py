@@ -344,12 +344,9 @@ class MathLib:
         # Tokenize the expression
         tokens = re.findall(r'\d+\.\d+|\d+|[-+*/]', self.expression)
 
-        print(tokens)
-
         i = 0
         while i < len(tokens):
 
-            print(tokens[i])
             if tokens[i] in ('*', '/'):
                 left = float(tokens[i - 1])
                 operator = tokens[i]
