@@ -15,6 +15,7 @@
 #
 # Copyright (c) 2025 Jan Kai Marek, xmarekj00
 # Copyright (c) 2025 Jan Frantisek Levicek, xlevic02
+# Copyright (c) 2025 Jakub Sebela, xsebelj00
 
 # Definujte proměnné
 PYTHON=python3
@@ -47,15 +48,11 @@ venv:
 
 # run (spustí program)
 run:
-	$(PYTHON) main.py
+	$(PYTHON) gui.py
 
 # test (spustí testy matematické knihovny)
 test:
 	$(PYTHON) -m unittest mathLibTests
-
-# Spuštění linters pro kontrolu kódu
-lint:
-	flake8
 
 # stddev (spustí překlad programu pro výpočet směrodatné odchylky na profiling) – při zvolení skriptovacího jazyka využijte pro stažení závislostí, případně volte variantu níže
 stddev:

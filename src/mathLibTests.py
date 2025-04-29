@@ -14,6 +14,7 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 #
 # Copyright (c) 2025 Jan Kai Marek, xmarekj00
+# Copyright (c) 2025 Jan Frantisek Levicek, xlevic02
 
 import unittest
 from mathLib import MathLib
@@ -82,7 +83,7 @@ class TestMatLib(unittest.TestCase):
         self.assertEqual(MathLib("0%").evaluate_percentage().expression, "0.0")
         self.assertEqual(MathLib("12.5%").evaluate_percentage().expression, "0.125")
         self.assertEqual(MathLib("1.5%").evaluate_percentage().expression, "0.015")
-        self.assertEqual(MathLib("99.9%").evaluate_percentage().expression, "0.999")
+        self.assertAlmostEqual(float(MathLib("99.9%").evaluate_percentage().expression), float("0.999"))
         self.assertEqual(MathLib("0.1%").evaluate_percentage().expression, "0.001")
         self.assertEqual(MathLib("3% + 5%").evaluate_percentage().expression, "0.03 + 0.05")
 
