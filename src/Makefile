@@ -1,67 +1,56 @@
-# This file is part of Calculator_app.
+# Makefile for Calculator_app
 #
-# Calculator_app is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+# This Makefile provides a set of shortcuts for developing, testing, documenting, and running
+# the Calculator_app project. It simplifies common operations using Python's venv and tools.
 #
-# Calculator_app is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
+# Targets:
 #
-# You should have received a copy of the GNU General Public License
-# along with this program. If not, see <https://www.gnu.org/licenses/>.
-#
-# Copyright (c) 2025 Jan Kai Marek, xmarekj00
-# Copyright (c) 2025 Jan Frantisek Levicek, xlevic02
+# help               Show all available targets and their descriptions.
+# venv               Create a new virtual environment in the .venv directory.
+# install            Install required Python packages into the virtual environment.
+# run                Run the GUI application.
+# test               Run unit tests using unittest.
+# clean              Remove all Python cache files and compiled bytecode.
+# pydoc              Generate HTML documentation using pydoc for project modules.
+# open-doc           Open the generated documentation file in the default browser.
+# remove-doc         Remove generated documentation files.
 
-# Definujte proměnné
-PYTHON=python3
-PIP=pip3
-PACKAGE_NAME=but-fit-ivs25
-PACKAGE_VERSION=1.0
-BUILD_DIR=../build
+# Show help for available commands
+help:
+	@echo "Available commands:"
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
 
-# all (přeloží projekt – včetně programu pro profiling) – při zvolení skriptovacího jazyka využijte pro stažení závislostí, případně volte variantu níže
-all:
-	echo Hello World!
+# Create a new virtual environment
+venv: ## Create a new virtual environment in .venv/
+	python3 -m venv .venv
 
-# pack (zabalí projekt tak, aby mohl být odevzdán)
-pack:
-	mkdir -p ../build  # Vytvoří složku pro balíček
+# Install dependencies
+install: ## Install Python dependencies from requirements.txt
+	.venv/bin/pip install -r requirements.txt
 
-	cp -r ../src ../build  # Zkopíruje hlavní složku projektu
+# Run the application
+run: ## Launch the calculator GUI
+	.venv/bin/python3 gui.py
 
-	# Přejdeme do build adresáře a vytvoříme balíček
-	cd ../build && dpkg-buildpackage -us -uc
+# Run tests
+test: ## Execute unit tests using unittest
+	.venv/bin/python3 -m unittest discover
 
+# Clean up compiled files
+clean: ## Delete __pycache__ folders and .pyc files
+	find . -type d -name "__pycache__" -exec rm -r {} +; find . -name "*.pyc" -delete
 
-# doc (spustí generování dokumentace)
-doc:
+# Generate documentation
+pydoc: ## Generate HTML documentation using pydoc
+	.venv/bin/python3 -m pydoc -w mathLib
+	.venv/bin/python3 -m pydoc -w gui
+	.venv/bin/python3 -m pydoc -w mathLibTests
 
-# Vytvoření virtuálního prostředí
-venv:
-	python3 -m venv $(VENV_DIR)
-	$(VENV_DIR)/bin/activate
+# Open documentation in browser
+open-doc: ## Open the mathLib.html documentation file in default browser
+	xdg-open mathLib.html || open mathLib.html
 
-# run (spustí program)
-run:
-	$(PYTHON) main.py
+# Remove generated documentation
+remove-doc: ## Delete generated .html documentation files
+	rm -f *.html
 
-# test (spustí testy matematické knihovny)
-test:
-	$(PYTHON) -m unittest mathLibTests
-
-# Spuštění linters pro kontrolu kódu
-lint:
-	flake8
-
-# stddev (spustí překlad programu pro výpočet směrodatné odchylky na profiling) – při zvolení skriptovacího jazyka využijte pro stažení závislostí, případně volte variantu níže
-stddev:
-
-# clean (smaže všechny soubory, co nemají být odevzdány)
-clean:
-	rm -rf __pycache__
-	rm -rf $(VENV_DIR)
-	rm -rf $(BUILD_DIR)
