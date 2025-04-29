@@ -53,4 +53,3 @@ open-doc: ## Open the mathLib.html documentation file in default browser
 # Remove generated documentation
 remove-doc: ## Delete generated .html documentation files
 	rm -f *.html
-

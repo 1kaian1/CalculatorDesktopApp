@@ -19,8 +19,8 @@
 
 import sys
 
-from PySide6.QtCore import QRegularExpression, Qt
-from PySide6.QtGui import QFont, QRegularExpressionValidator, QIcon
+from PySide6.QtCore import QRegularExpression
+from PySide6.QtGui import QFont, QRegularExpressionValidator
 from PySide6.QtWidgets import QWidget, QLineEdit, QVBoxLayout, QPushButton, QApplication, QGridLayout, QSizePolicy
 
 from mathLib import MathLib
@@ -29,6 +29,10 @@ from mathLib import MathLib
 class GUI(QWidget):
 
     def __init__(self):
+        """
+        Initializes the calculator GUI: sets up the window, input field, buttons,
+        their layout, and applies the basic dark theme styling.
+        """
 
         # Calling QWidget constructor
         super().__init__()
@@ -136,14 +140,16 @@ class GUI(QWidget):
         """)
 
     def on_button_click(self):
-        r"""
-        Called when any button is clicked.
+        """
+        Handles calculator button clicks and performs the appropriate action.
 
-        Performs various actions depending on button label:
-        - "=" evaluates expression.
-        - "C" clears input.
-        - "⌫" deletes character at cursor.
-        - Otherwise, inserts clicked character at cursor.
+        Behavior depends on the label of the clicked button:
+        - "=" : Evaluates the current expression and displays the result.
+        - "C" : Clears the input field and resets the evaluation state.
+        - "⌫" : Deletes the character before the cursor, or clears the field if a result was recently shown.
+        - Any other character: Inserts the character at the current cursor position in the input field.
+
+        Also ensures the input field retains focus after any button is pressed.
         """
 
         button = self.sender()
@@ -197,12 +203,14 @@ class GUI(QWidget):
         self.value_field.setFocus()
 
     def on_text_changed(self):
-        r"""
-        Called when value_field text changes.
+        """
+        Handles changes in the input field text.
 
-        Manages:
-        - After-evaluation state,
-        - Basic input restrictions.
+        Responsibilities:
+        - Manages behavior after a result or error message is displayed.
+        - Prevents invalid edits (e.g. appending to "Error" or evaluated results).
+        - Automatically clears or resets the input field when the user starts typing after evaluation.
+        - Updates instant history for caret-aware input control.
         """
 
         text = self.value_field.text()
@@ -234,12 +242,17 @@ class GUI(QWidget):
 
         self.value_field_instant_history = self.value_field.text()
 
-    def on_cursor_position_changed(self, old_pos, new_pos):
+    def on_cursor_position_changed(self):
+        """
+        Handles cursor movement after evaluation.
 
-        # Managing the after-evaluation care
+        This method ensures that the user cannot modify an "Error" message or an evaluated result directly.
+        If the result_flag is set, it restores the original equation (stored in value_field_equation_preserved)
+        to allow the user to correct it.
 
-        # This function is needed to restrict user's interfering with printed "Error" message. With any cursor
-        # position change the value_field_equation_preserved is printed on the screen, enabling the user to correct the equation
+        Signals are temporarily blocked to prevent recursive calls or interference between
+        on_text_changed and on_cursor_position_changed during the update.
+        """
 
         # Result is printed and we are choosing what do to next
         if self.result_flag:
@@ -254,8 +267,15 @@ class GUI(QWidget):
             self.result_flag = False
 
     def keyPressEvent(self, event):
+        """
+        Handles key press events, specifically the Enter key.
 
-        # This function is only needed to handle the enter-pressed event
+        If the Enter key (key code 16777220) is pressed and the input field is not empty,
+        the current expression is evaluated using MathLib and the result is displayed.
+        The original expression is preserved for potential post-processing or recovery.
+
+        Calls the base class implementation to ensure standard key handling is preserved.
+        """
 
         # If enter (16777220) is pressed, evaluate, print result
         if event.key() == 16777220 and self.value_field.text() != "":
@@ -269,6 +289,15 @@ class GUI(QWidget):
         super().keyPressEvent(event)
 
     def resizeEvent(self, event):
+        """
+        Handles window resize events to adjust the font size of the input field.
+
+        Dynamically changes the font size of the value_field based on the height of the window:
+        - If the window height is greater than 600 pixels, sets the font size to 48.
+        - Otherwise, sets the font size to 36.
+
+        Calls the base class implementation to ensure default resizing behavior is preserved.
+        """
 
         # ChatGPT said this should be here
         super().resizeEvent(event)
