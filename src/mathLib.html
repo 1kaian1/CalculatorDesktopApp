@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Python: module mathLib</title>
+</head><body>
+
+<table class="heading">
+<tr class="heading-text decor">
+<td class="title">&nbsp;<br><strong class="title">mathLib</strong></td>
+<td class="extra"><a href=".">index</a><br><a href="file:/home/jaekwondo/Skola/IVS/BUT-FIT-IVS25-main/src/mathLib.py">/home/jaekwondo/Skola/IVS/BUT-FIT-IVS25-main/src/mathLib.py</a></td></tr></table>
+    <p><span class="code">#&nbsp;This&nbsp;file&nbsp;is&nbsp;part&nbsp;of&nbsp;Calculator_app.<br>
+#<br>
+#&nbsp;Calculator_app&nbsp;is&nbsp;free&nbsp;software:&nbsp;you&nbsp;can&nbsp;redistribute&nbsp;it&nbsp;and/or&nbsp;modify<br>
+#&nbsp;it&nbsp;under&nbsp;the&nbsp;terms&nbsp;of&nbsp;the&nbsp;GNU&nbsp;General&nbsp;Public&nbsp;License&nbsp;as&nbsp;published&nbsp;by<br>
+#&nbsp;the&nbsp;Free&nbsp;Software&nbsp;Foundation,&nbsp;either&nbsp;version&nbsp;3&nbsp;of&nbsp;the&nbsp;License,&nbsp;or<br>
+#&nbsp;(at&nbsp;your&nbsp;option)&nbsp;any&nbsp;later&nbsp;version.<br>
+#<br>
+#&nbsp;Calculator_app&nbsp;is&nbsp;distributed&nbsp;in&nbsp;the&nbsp;hope&nbsp;that&nbsp;it&nbsp;will&nbsp;be&nbsp;useful,<br>
+#&nbsp;but&nbsp;WITHOUT&nbsp;ANY&nbsp;WARRANTY;&nbsp;without&nbsp;even&nbsp;the&nbsp;implied&nbsp;warranty&nbsp;of<br>
+#&nbsp;MERCHANTABILITY&nbsp;or&nbsp;FITNESS&nbsp;FOR&nbsp;A&nbsp;PARTICULAR&nbsp;PURPOSE.&nbsp;See&nbsp;the<br>
+#&nbsp;GNU&nbsp;General&nbsp;Public&nbsp;License&nbsp;for&nbsp;more&nbsp;details.<br>
+#<br>
+#&nbsp;You&nbsp;should&nbsp;have&nbsp;received&nbsp;a&nbsp;copy&nbsp;of&nbsp;the&nbsp;GNU&nbsp;General&nbsp;Public&nbsp;License<br>
+#&nbsp;along&nbsp;with&nbsp;this&nbsp;program.&nbsp;If&nbsp;not,&nbsp;see&nbsp;&lt;<a href="https://www.gnu.org/licenses/">https://www.gnu.org/licenses/</a>&gt;.<br>
+#<br>
+#&nbsp;Copyright&nbsp;(c)&nbsp;2025&nbsp;Jan&nbsp;Kai&nbsp;Marek,&nbsp;xmarekj00<br>
+#&nbsp;Copyright&nbsp;(c)&nbsp;2025&nbsp;Jan&nbsp;Frantisek&nbsp;Levicek,&nbsp;xlevic02</span></p>
+<p>
+<table class="section">
+<tr class="decor pkg-content-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Modules</strong></td></tr>
+    
+<tr><td class="decor pkg-content-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><table><tr><td class="multicolumn"><a href="re.html">re</a><br>
+</td><td class="multicolumn"></td><td class="multicolumn"></td><td class="multicolumn"></td></tr></table></td></tr></table><p>
+<table class="section">
+<tr class="decor index-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Classes</strong></td></tr>
+    
+<tr><td class="decor index-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><dl>
+<dt class="heading-text"><a href="builtins.html#object">builtins.object</a>
+</dt><dd>
+<dl>
+<dt class="heading-text"><a href="mathLib.html#MathLib">MathLib</a>
+</dt></dl>
+</dd>
+</dl>
+ <p>
+<table class="section">
+<tr class="decor title-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><a name="MathLib">class <strong>MathLib</strong></a>(<a href="builtins.html#object">builtins.object</a>)</td></tr>
+    
+<tr><td class="decor title-decor" rowspan=2><span class="code">&nbsp;&nbsp;&nbsp;</span></td>
+<td class="decor title-decor" colspan=2><span class="code"><a href="#MathLib">MathLib</a>(expression)<br>
+&nbsp;<br>
+<br>&nbsp;</span></td></tr>
+<tr><td>&nbsp;</td>
+<td class="singlecolumn">Methods defined here:<br>
+<dl><dt><a name="MathLib-__init__"><strong>__init__</strong></a>(self, expression)</dt><dd><span class="code">Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</span></dd></dl>
+
+<dl><dt><a name="MathLib-evaluate_addition_and_substraction"><strong>evaluate_addition_and_substraction</strong></a>(self)</dt><dd><span class="code">This&nbsp;function&nbsp;processes&nbsp;the&nbsp;expression&nbsp;for&nbsp;addition&nbsp;'+'&nbsp;and&nbsp;subtraction&nbsp;'-'&nbsp;operations.<br>
+&nbsp;<br>
+It&nbsp;loops&nbsp;through&nbsp;the&nbsp;expression&nbsp;and&nbsp;if&nbsp;it&nbsp;finds&nbsp;'+'&nbsp;or&nbsp;'-',&nbsp;it&nbsp;performs&nbsp;the&nbsp;operation&nbsp;between<br>
+the&nbsp;number&nbsp;on&nbsp;the&nbsp;left&nbsp;and&nbsp;the&nbsp;number&nbsp;on&nbsp;the&nbsp;right,&nbsp;then&nbsp;updates&nbsp;the&nbsp;result.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;The&nbsp;final&nbsp;result&nbsp;after&nbsp;performing&nbsp;the&nbsp;+&nbsp;and&nbsp;-&nbsp;operations.</span></dd></dl>
+
+<dl><dt><a name="MathLib-evaluate_double_operators"><strong>evaluate_double_operators</strong></a>(self)</dt><dd><span class="code">Evaluating&nbsp;double&nbsp;operators&nbsp;including&nbsp;**,&nbsp;//,&nbsp;√√,&nbsp;^^,&nbsp;!!,&nbsp;and&nbsp;others.<br>
+&nbsp;<br>
+This&nbsp;function&nbsp;replaces&nbsp;any&nbsp;number&nbsp;of&nbsp;consecutive&nbsp;operators&nbsp;with&nbsp;the&nbsp;correct&nbsp;one.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;--&nbsp;=&nbsp;+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;+-+&nbsp;=&nbsp;-<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-+-&nbsp;=&nbsp;+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;**&nbsp;=&nbsp;*<br>
+&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;=&nbsp;/<br>
+&nbsp;&nbsp;&nbsp;&nbsp;√√&nbsp;=&nbsp;√<br>
+&nbsp;&nbsp;&nbsp;&nbsp;^^&nbsp;=&nbsp;^<br>
+&nbsp;&nbsp;&nbsp;&nbsp;!!&nbsp;=&nbsp;!<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;1+2--3++4+-+5-+-6&nbsp;=&nbsp;1+2+3+4-5+6</span></dd></dl>
+
+<dl><dt><a name="MathLib-evaluate_expression"><strong>evaluate_expression</strong></a>(self)</dt><dd><span class="code">Evaluate&nbsp;given&nbsp;expression</span></dd></dl>
+
+<dl><dt><a name="MathLib-evaluate_factorial"><strong>evaluate_factorial</strong></a>(self)</dt><dd><span class="code">Evaluating&nbsp;factorial<br>
+&nbsp;<br>
+re.findall&nbsp;-&nbsp;„find&nbsp;all&nbsp;matches“&nbsp;of&nbsp;the&nbsp;given&nbsp;pattern&nbsp;in&nbsp;expression<br>
+<a href="#MathLib">MathLib</a>.factorial&nbsp;-&nbsp;calling&nbsp;<a href="#MathLib">MathLib</a>&nbsp;func&nbsp;for&nbsp;factorial<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(\d+)&nbsp;!<br>
+&nbsp;&nbsp;&nbsp;&nbsp;group(1)^<br>
+&nbsp;<br>
+group(1)&nbsp;-&nbsp;one&nbsp;or&nbsp;more&nbsp;digits</span></dd></dl>
+
+<dl><dt><a name="MathLib-evaluate_multiplication_and_division"><strong>evaluate_multiplication_and_division</strong></a>(self)</dt><dd><span class="code">This&nbsp;function&nbsp;processes&nbsp;the&nbsp;expression&nbsp;for&nbsp;multiplication&nbsp;'*'&nbsp;and&nbsp;division&nbsp;'/'&nbsp;operations.<br>
+&nbsp;<br>
+It&nbsp;loops&nbsp;through&nbsp;the&nbsp;expression&nbsp;and&nbsp;if&nbsp;it&nbsp;finds&nbsp;'*'&nbsp;or&nbsp;'/',&nbsp;it&nbsp;performs&nbsp;the&nbsp;operation&nbsp;between<br>
+the&nbsp;number&nbsp;on&nbsp;the&nbsp;left&nbsp;and&nbsp;the&nbsp;number&nbsp;on&nbsp;the&nbsp;right,&nbsp;then&nbsp;replaces&nbsp;the&nbsp;operation&nbsp;with&nbsp;the&nbsp;result.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;The&nbsp;modified&nbsp;expression&nbsp;with&nbsp;*&nbsp;and&nbsp;/&nbsp;operations&nbsp;resolved.</span></dd></dl>
+
+<dl><dt><a name="MathLib-evaluate_parentheses"><strong>evaluate_parentheses</strong></a>(self)</dt><dd><span class="code">Evaluating&nbsp;parentheses&nbsp;and&nbsp;adding&nbsp;'*'&nbsp;operator&nbsp;before&nbsp;parentheses&nbsp;if&nbsp;necessary.<br>
+&nbsp;<br>
+re.sub&nbsp;-&nbsp;„search&nbsp;and&nbsp;replace“&nbsp;given&nbsp;pattern&nbsp;in&nbsp;expression<br>
+<a href="#MathLib">MathLib</a>.evaluate_expression&nbsp;-&nbsp;calling&nbsp;<a href="#MathLib">MathLib</a>&nbsp;func&nbsp;to&nbsp;evaluate&nbsp;the&nbsp;inner&nbsp;expression&nbsp;in&nbsp;parentheses<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(\d|\)|!|%|√|\^)&nbsp;\(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;group(1)^<br>
+&nbsp;<br>
+group(1)&nbsp;-&nbsp;checks&nbsp;for&nbsp;any&nbsp;character&nbsp;in&nbsp;front&nbsp;of&nbsp;"("&nbsp;except&nbsp;for&nbsp;those&nbsp;inside&nbsp;square&nbsp;brackets.<br>
+&nbsp;<br>
+This&nbsp;function&nbsp;performs&nbsp;two&nbsp;tasks:<br>
+1.&nbsp;If&nbsp;there&nbsp;is&nbsp;an&nbsp;opening&nbsp;bracket&nbsp;"("&nbsp;and&nbsp;no&nbsp;operator&nbsp;is&nbsp;in&nbsp;front&nbsp;of&nbsp;it,&nbsp;the&nbsp;function&nbsp;adds&nbsp;a&nbsp;"*"&nbsp;before&nbsp;it.<br>
+2.&nbsp;It&nbsp;recursively&nbsp;evaluates&nbsp;the&nbsp;innermost&nbsp;expressions&nbsp;within&nbsp;parentheses,&nbsp;replacing&nbsp;them&nbsp;with&nbsp;the&nbsp;result.</span></dd></dl>
+
+<dl><dt><a name="MathLib-evaluate_percentage"><strong>evaluate_percentage</strong></a>(self)</dt><dd><span class="code">Evaluating&nbsp;percentage<br>
+&nbsp;<br>
+re.findall&nbsp;-&nbsp;„find&nbsp;all&nbsp;matches“&nbsp;of&nbsp;the&nbsp;given&nbsp;pattern&nbsp;in&nbsp;expression<br>
+<a href="#MathLib">MathLib</a>.percentage&nbsp;-&nbsp;calling&nbsp;<a href="#MathLib">MathLib</a>&nbsp;func&nbsp;for&nbsp;percentage&nbsp;calculation<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(-?\d+\.?\d*)&nbsp;%<br>
+&nbsp;&nbsp;&nbsp;&nbsp;group(1)^<br>
+&nbsp;<br>
+group(1)&nbsp;-&nbsp;one&nbsp;or&nbsp;more&nbsp;digits,&nbsp;optional&nbsp;decimal&nbsp;part</span></dd></dl>
+
+<dl><dt><a name="MathLib-evaluate_power"><strong>evaluate_power</strong></a>(self)</dt><dd><span class="code">Evaluating&nbsp;exponentiation<br>
+&nbsp;<br>
+re.findall&nbsp;-&nbsp;„find&nbsp;all&nbsp;matches“&nbsp;of&nbsp;the&nbsp;given&nbsp;pattern&nbsp;in&nbsp;expression<br>
+<a href="#MathLib">MathLib</a>.power&nbsp;-&nbsp;calling&nbsp;<a href="#MathLib">MathLib</a>&nbsp;func&nbsp;for&nbsp;exponentiation<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(\d+\.?\d*)&nbsp;\^&nbsp;(-?\d+\.?\d*)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;group(1)^&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;group(2)^<br>
+&nbsp;<br>
+group(1)&nbsp;-&nbsp;one&nbsp;or&nbsp;more&nbsp;digits,&nbsp;optional&nbsp;decimal&nbsp;part<br>
+group(2)&nbsp;-&nbsp;one&nbsp;or&nbsp;more&nbsp;digits,&nbsp;optional&nbsp;decimal&nbsp;part,&nbsp;possibly&nbsp;negative</span></dd></dl>
+
+<dl><dt><a name="MathLib-evaluate_sqrt"><strong>evaluate_sqrt</strong></a>(self)</dt><dd><span class="code">Evaluating&nbsp;square&nbsp;root<br>
+&nbsp;<br>
+re.findall&nbsp;-&nbsp;„find&nbsp;all&nbsp;matches“&nbsp;of&nbsp;the&nbsp;given&nbsp;pattern&nbsp;in&nbsp;expression<br>
+<a href="#MathLib">MathLib</a>.sqrt&nbsp;-&nbsp;calling&nbsp;<a href="#MathLib">MathLib</a>&nbsp;func&nbsp;for&nbsp;square&nbsp;root<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(\d*)&nbsp;√&nbsp;(-?\d+\.?\d*)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;group(1)^&nbsp;&nbsp;&nbsp;group(2)^<br>
+&nbsp;<br>
+group(1)&nbsp;-&nbsp;zero&nbsp;or&nbsp;more&nbsp;digits<br>
+group(2):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-?:&nbsp;optional&nbsp;minus<br>
+&nbsp;&nbsp;&nbsp;&nbsp;d+:&nbsp;one&nbsp;or&nbsp;more&nbsp;digits<br>
+&nbsp;&nbsp;&nbsp;&nbsp;.?:&nbsp;optional&nbsp;dot&nbsp;(for&nbsp;decimal&nbsp;number)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;d*:&nbsp;zero&nbsp;or&nbsp;more&nbsp;digits<br>
+&nbsp;<br>
+If&nbsp;group(1)&nbsp;is&nbsp;None,&nbsp;takes&nbsp;2&nbsp;as&nbsp;default&nbsp;(meaning&nbsp;square&nbsp;root&nbsp;from&nbsp;x&nbsp;at&nbsp;degree&nbsp;2)</span></dd></dl>
+
+<dl><dt><a name="MathLib-get_result"><strong>get_result</strong></a>(self)</dt><dd><span class="code">Return&nbsp;self.<strong>expression</strong>&nbsp;when&nbsp;requested.</span></dd></dl>
+
+<dl><dt><a name="MathLib-print_step"><strong>print_step</strong></a>(self)</dt><dd><span class="code">Print&nbsp;evaluation&nbsp;step&nbsp;in&nbsp;console.</span></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><span class="code">dictionary&nbsp;for&nbsp;instance&nbsp;variables</span></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><span class="code">list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object</span></dd>
+</dl>
+</td></tr></table></td></tr></table>
+</body></html>
