@@ -318,11 +318,3 @@ class GUI(QWidget):
             font = QFont()
             font.setPointSize(36)
             self.value_field.setFont(font)
-
-if __name__ == '__main__':
-
-    app = QApplication(sys.argv)
-    calculator = GUI()
-    calculator.show()
-    sys.exit(app.exec())
-

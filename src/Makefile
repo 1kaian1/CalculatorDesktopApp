@@ -11,7 +11,7 @@
 # run                Run the GUI application.
 # test               Run unit tests using unittest.
 # clean              Remove all Python cache files and compiled bytecode.
-# pydoc              Generate HTML documentation using pydoc for project modules.
+# doc              Generate HTML documentation using pydoc for project modules.
 # open-doc           Open the generated documentation file in the default browser.
 # remove-doc         Remove generated documentation files.
 
@@ -30,7 +30,7 @@ install: ## Install Python dependencies from requirements.txt
 
 # Run the application
 run: ## Launch the calculator GUI
-	.venv/bin/python3 gui.py
+	.venv/bin/python3 main.py
 
 # Run tests
 test: ## Execute unit tests using unittest
@@ -41,10 +41,10 @@ clean: ## Delete __pycache__ folders and .pyc files
 	find . -type d -name "__pycache__" -exec rm -r {} +; find . -name "*.pyc" -delete
 
 # Generate documentation
-pydoc: ## Generate HTML documentation using pydoc
-	.venv/bin/python3 -m pydoc -w mathLib
-	.venv/bin/python3 -m pydoc -w gui
-	.venv/bin/python3 -m pydoc -w mathLibTests
+doc: ## Generate HTML documentation using pydoc
+	.venv/bin/python -m pydoc -w mathLib
+	.venv/bin/python -m pydoc -w gui
+	.venv/bin/python -m pydoc -w mathLibTests
 
 # Open documentation in browser
 open-doc: ## Open the mathLib.html documentation file in default browser

@@ -15,6 +15,7 @@
 #
 # Copyright (c) 2025 Jan Kai Marek, xmarekj00
 # Copyright (c) 2025 Jan Frantisek Levicek, xlevic02
+# Copyright (c) 2025 Tomáš Kudrna, xkudrnt00
 
 import re
 
