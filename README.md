@@ -1,14 +1,14 @@
 # BUT-FIT-IVS25
 
-Prostredi
+Environment
 ---------
 
 Ubuntu 64bit
 
-Autori
+Authors
 ------
 
-Nazev tymu
+WideScope
 - xlevic02 Jan František Levíček
 - xkudrnt00 Tomáš Kudrna
 - xsebelj00 Jakub Šebela
