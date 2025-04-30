@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # This file is part of Calculator_app.
 #
 # Calculator_app is free software: you can redistribute it and/or modify
@@ -21,21 +22,39 @@ import sys
 result = 0
 
 class StandardDeviation:
+    """
+    Class for computing sample standard deviation from a stream of numeric input.
+    """
+
     @staticmethod
     def sample_standard_deviation_stream():
-        N = 0
-        mean = 0.0
-        M2 = 0.0
+        """
+        Computes the sample standard deviation from numbers read from standard input.
+        Uses Welford's algorithm for numerical stability.
+
+        The input should consist of numeric values separated by whitespace, provided via stdin.
+        Non-numeric input will return the string "error".
+
+        Returns:
+            float: The computed sample standard deviation.
+            str: "error" if any input value is not a valid float.
+
+        Raises:
+            ValueError: If fewer than two valid numeric values are provided.
+        """
+        N = 0              # Number of valid inputs
+        mean = 0.0         # Running mean
+        M2 = 0.0           # Sum of squares of differences from the current mean
 
         for line in sys.stdin:
             for token in line.split():
                 try:
                     x = float(token)
                 except ValueError:
-                    return "error"
-                    #continue
+                    return "error"  # Return error on invalid input
 
                 N += 1
+                # Update mean and M2 using Welford's online algorithm
                 delta = MathLib.subtract(x, mean)
                 mean = MathLib.add(mean, MathLib.divide(delta, N))
                 delta2 = MathLib.subtract(x, mean)
@@ -44,19 +63,23 @@ class StandardDeviation:
         if N < 2:
             raise ValueError("At least two data points are required")
 
-        variance = MathLib.divide(M2, N - 1)
-        std_dev = variance ** 0.5
+        variance = MathLib.divide(M2, N - 1)  # Sample variance
+        std_dev = MathLib.sqrt(variance)     # Sample standard deviation
         return std_dev
 
 
-
-if __name__ == "__main__":
+def main():
+    """
+    Main entry point for the program. Computes and prints the sample standard deviation
+    of numbers read from standard input. Prints 'error' if an exception occurs.
+    """
     try:
         result = StandardDeviation.sample_standard_deviation_stream()
         print(result)
-        result = input()
     except Exception as e:
-        print(result)
-        #result = input()
+        print("error")
         sys.exit(1)
 
+
+if __name__ == "__main__":
+    main()

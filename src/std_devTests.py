@@ -16,13 +16,9 @@
 # Copyright (c) 2025 Tomáš Kudrna, xkudrnt00
 
 import unittest
-from std_dev import StandardDeviation
-
-
-import unittest
 import sys
 import io
-from std_dev import StandardDeviation
+from stddev import StandardDeviation
 
 
 class TestStandardDeviationStream(unittest.TestCase):

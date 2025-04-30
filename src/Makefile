@@ -6,6 +6,7 @@
 # Targets:
 #
 # help               Show all available targets and their descriptions.
+# all                Set up the full environment
 # venv               Create a new virtual environment in the .venv directory.
 # install            Install required Python packages into the virtual environment.
 # run                Run the GUI application.
@@ -19,6 +20,9 @@
 help:
 	@echo "Available commands:"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
+
+# Default setup
+all: venv install stddev ## Set up the full environment (venv, install, stddev)
 
 # Create a new virtual environment
 venv: ## Create a new virtual environment in .venv/
@@ -45,6 +49,7 @@ doc: ## Generate HTML documentation using pydoc
 	.venv/bin/python -m pydoc -w mathLib
 	.venv/bin/python -m pydoc -w gui
 	.venv/bin/python -m pydoc -w mathLibTests
+	.venv/bin/python -m pydoc -w stddev
 
 # Open documentation in browser
 open-doc: ## Open the mathLib.html documentation file in default browser
@@ -53,3 +58,8 @@ open-doc: ## Open the mathLib.html documentation file in default browser
 # Remove generated documentation
 remove-doc: ## Delete generated .html documentation files
 	rm -f *.html
+
+# Make stddev.py executable as ./stddev
+stddev: ## Make stddev.py executable and create symlink ./stddev
+	chmod +x stddev.py
+	ln -sf stddev.py stddev

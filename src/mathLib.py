@@ -125,6 +125,12 @@ class MathLib:
             raise ZeroDivisionError("Error: Division by zero")
         return a / b
 
+    @staticmethod
+    def sqrt(a):
+        if a < 0:
+            raise ValueError("Error: A negative number does not have a real root with an even index")
+        return a ** 0.5
+
     def evaluate_parentheses(self):
         """
         Evaluates parentheses in the expression and ensures correct handling of implicit multiplication.
