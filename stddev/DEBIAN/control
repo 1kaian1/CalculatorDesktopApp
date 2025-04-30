@@ -1,0 +1,7 @@
+Package: profiling
+Version: 1.0
+Priority: optional
+Architecture: all
+Depends: python3
+Maintainer: Tomas "xkudrnt00" Kudrna <xkudrnt00@stud.fit.vut.cz>
+Description: Skript pro vypocet smerodatne odchylky

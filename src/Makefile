@@ -40,6 +40,12 @@ run: ## Launch the calculator GUI
 test: ## Execute unit tests using unittest
 	.venv/bin/python3 -m unittest discover
 
+# Makes package for submission
+pack:
+    # TODO kopie repozitare
+    dpkg-deb --build ivs25-calculator
+    dpkg-deb --build stddev
+
 # Clean up compiled files
 clean: ## Delete __pycache__ folders and .pyc files
 	find . -type d -name "__pycache__" -exec rm -r {} +; find . -name "*.pyc" -delete
