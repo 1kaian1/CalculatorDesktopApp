@@ -16,6 +16,9 @@
 # open-doc           Open the generated documentation file in the default browser.
 # remove-doc         Remove generated documentation files.
 
+LOGIN_DIR = xmarekj00_xsebelj00_xlevic02_xkudrnt00
+ZIP_NAME = $(LOGIN_DIR).zip
+
 # Show help for available commands
 help:
 	@echo "Available commands:"
@@ -42,9 +45,25 @@ test: ## Execute unit tests using unittest
 
 # Makes package for submission
 pack:
-    # TODO kopie repozitare
+    # Making export repository
+    rm -rf $(LOGIN_DIR)
+    mkdir $(LOGIN_DIR)
+
+    # Copy git repository
+    git clone . $(LOGIN_DIR)/BUT-FIT-IVS25
+
+    # Making installer packages
     dpkg-deb --build ivs25-calculator
     dpkg-deb --build stddev
+
+    # Adding installer packages
+    cp ivs25-calculator.deb
+    cp stddev.deb
+
+    # TODO generovani dokumentace
+
+    # Making .zip file
+    zip -r $(ZIP_NAME) $(LOGIN_DIR)
 
 # Clean up compiled files
 clean: ## Delete __pycache__ folders and .pyc files
