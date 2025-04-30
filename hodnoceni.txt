@@ -1,0 +1,4 @@
+xmarekj00 100 (testy matematické knihovny, matematická knihovna, GUI, mockup)
+xsebelj00 100 (GUI, programová dokumentace, mockup)
+xlevic02 100 (testy matematické knihovny, matematická knihovna, GUI, uživatelská dokumentace, instalační balíček)
+xkudrnt00 100 (matematická knihovna, profiling, profiling testy)
