@@ -127,6 +127,15 @@ class MathLib:
 
     @staticmethod
     def sqrt(a):
+        """
+        Calculates the square root of a non-negative number.
+
+        Raises:
+            ValueError: If the input is negative.
+
+        Returns:
+            float: The square root of the input number.
+        """
         if a < 0:
             raise ValueError("Error: A negative number does not have a real root with an even index")
         return a ** 0.5
