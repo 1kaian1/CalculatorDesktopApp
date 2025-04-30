@@ -1,0 +1,31 @@
+skutecnost.txt
+by xmarekj00
+
+
+Vývoj kalkulačky probíhal odlišně od původního plánu, žádný setback však nebereme jako něco nepřirozeného.
+
+Během vývoje jsme bojovali zejména v těchto oblastech:
+
+- Cyklení: Nastávaly chvíle, kdy už jsme potřebovali mít hotový základ a posunout se kupředu, přesto bylo potřeba stále
+něco ladit či měnit na stávajícím kódu a to nás brzdilo. Hlavní dvě otázky, ve kterých jsme se na chvíli zamotali byly
+1) jaký typ kalkulačky tvoříme (lineární vs. stromová) a2) jakou knihovnu použijeme pro GUI naší kalkulačky (tkinter
+vs. PySide6).
+
+- Duplicity: Nesoulady ve zvolení příslušných nástrojů vedly k tomu, že jsme tvořili zároveň dvě GUI, abychom mohli
+vybrat tu lepší. Ohledně matematické knihovny jsme se na stromové struktuře shodli poměrně brzy, avšak nastal konflikt
+mezi mnou a xlevic02, kdy jsme oba vytvořili svou verzi funkční stromové kalkulačky, avšak s odlišnostmi v rozsahu
+implementace. Nedemokraticky jsem nakonec zapracoval na své verzi kalkulačky a defacto jsem tak rozhodl, která verze
+bude implementována, jelikož jsme se již potřebovali posunout kupředu. Zpětně ale musím priznat, že i druhá verze
+implementace by mohla použita a byla by pravděpodobně efektivnější.
+
+- Změny rolí: Původní role sepsané v předběžném plánu se ukázaly jako nefunkční zejména z důvodu, že by jednotliví
+členové museli vyčkávat na hotovou práci dalších členů. V praxi jsme tedy ve finále fungovali tak, že jsme se každý
+týden pravidelně scházeli a diskutovali nad tím, co máme hotovo, jak jsme se posunuli, jaké další kroky podnikneme a
+kdo na čem bude další týden pracovat. Tato forma vývoje se z mého pohledu ukázala jako flexibilnější a efektivnější.
+
+Co se povedlo:
+
+- Kromě toho, že vývoj kalkulačky byl úspěšně dokončen jsme byli schopni implementovat funkčnost závorek.
+- Časový plán byl víceméně dodržen, časová rezerva se ukázala jako dobrá, praktická věc.
+- Jsem rád, že jsme se rozhodli pro vývoj v jazyce Python a ne např. v jazyce C. Podle zkušenosti ostatních týmů jsme
+si, myslím, usnadnili práci, jelikož jsme nemuseli vše dělat úplně od píky.
