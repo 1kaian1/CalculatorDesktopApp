@@ -1,6 +1,7 @@
 [Desktop Entry]
 Name=ivs25-calculator
 Exec=/usr/bin/ivs25-calculator
-Icon=/usr/share/icons/calc_icon.png
+Icon=/usr/share/icons/hicolor/64x64/apps/calc_icon.png
 Categories=Utility
 Terminal=false
+Type=Application
