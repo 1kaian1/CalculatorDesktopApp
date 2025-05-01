@@ -58,7 +58,7 @@ pack:
 	mkdir $(LOGIN_DIR)/repo
 
 	# Copy git repository
-	git clone .. $(LOGIN_DIR)/repo
+	git clone git@github.com:xlevic02/BUT-FIT-IVS25.git $(LOGIN_DIR)/repo
 
 	# Making installer packages
 	dpkg-deb --build ../ivs25-calculator
