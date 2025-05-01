@@ -1,0 +1,8 @@
+Package: ivs25-calculator
+Version: 1.0
+Section: utils
+Priority: optional
+Architecture: all
+Depends: python3, python3-pip
+Maintainer: Jan Frantisek "xlevic02" Levicek <xlevic02@stud.fit.vut.cz>
+Description: Aplikace kalkulacky s GUI v ramci projektu do IVS

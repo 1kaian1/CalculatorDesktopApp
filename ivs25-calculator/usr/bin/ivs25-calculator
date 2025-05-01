@@ -1,0 +1,10 @@
+!#/bin/bash
+
+python3 -c "import PySide6" 2>/dev/null
+
+if [ $? -ne 0 ]; then
+    echo "[ivs25-calculator] PySide6 neni nainstalovan. Instalace pres pip..."
+    pip install --user PySide6
+fi
+
+python3 /usr/share/ivs25-calculator/main.py

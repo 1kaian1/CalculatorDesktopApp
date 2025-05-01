@@ -79,6 +79,37 @@ pack:
 	# Making .zip file
 	zip -r $(ZIP_NAME) $(LOGIN_DIR)
 
+# Makes package for submission
+pack:
+	# Making export repository
+	rm -rf $(LOGIN_DIR)
+	mkdir $(LOGIN_DIR)
+	mkdir $(LOGIN_DIR)/doc
+	mkdir $(LOGIN_DIR)/install
+	mkdir $(LOGIN_DIR)/repo
+
+	# Copy git repository
+	git clone .. $(LOGIN_DIR)/repo
+
+	# Making installer packages
+	dpkg-deb --build ../ivs25-calculator
+	dpkg-deb --build ../stddev
+
+	# Adding installer packages
+	cp ../ivs25-calculator.deb $(LOGIN_DIR)/install/
+	cp ../stddev.deb $(LOGIN_DIR)/install/
+
+	# Generating documentation
+	.venv/bin/python -m pydoc -w src/mathLib
+	.venv/bin/python -m pydoc -w src/gui
+	.venv/bin/python -m pydoc -w src/mathLibTests
+	.venv/bin/python -m pydoc -w src/stddev
+
+	cp src/*.html $(LOGIN_DIR)/doc/
+
+	# Making .zip file
+	zip -r $(ZIP_NAME) $(LOGIN_DIR)
+
 # Clean up compiled files
 clean: ## Delete __pycache__ folders and .pyc files
 	find . -type d -name "__pycache__" -exec rm -r {} +; find . -name "*.pyc" -delete
